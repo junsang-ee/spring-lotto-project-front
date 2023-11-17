@@ -6,6 +6,10 @@ const exceptList = ref([]);
 const needsList = ref([]);
 const isShowModal = ref(false);
 
+const openNoticeModalView = () => {
+  alert("Welcome junsang-lotto site");
+}
+
 function closeModal() {
   isShowModal.value = false;
 }
@@ -26,7 +30,7 @@ function welcomeNotice() {
   alert("준상 로또 페이지에 접속하신것을 진심으로 환영합니다!");
 }
 
-onMounted(openModal);
+onMounted(openNoticeModalView);
 
 </script>
 
@@ -42,7 +46,7 @@ onMounted(openModal);
       <div class="needs-container">
         <h1 class="title">포함되어야 할 번호 목록</h1>
         <div class="btn-add btn-needs">
-          <button @click="addNeedsNumber">포함되어야 할 번호 추가하기</button>
+          <button @click="openModal">포함되어야 할 번호 추가하기</button>
         </div>
       </div>
     </div>
