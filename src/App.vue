@@ -11,12 +11,16 @@ const openNoticeModalView = () => {
   alert("Welcome Junsang-lotto site");
 }
 
-const closeModal = () => {
+const closeModal = ({exceptList, needsList}) => {
+  
+  exceptList.value = exceptList;
+  needsList.value = needsList;
+  console.log("app vue exceptList :: " + exceptList.value);
+  console.log("app vue needsList :: " + needsList.value);
   isShowModal.value = false;
 }
 
 const openModal = (needs) => {
-  console.log("needs :: ", needs)
   isShowModal.value = true;
   isNeeds.value = needs;
 }
@@ -57,7 +61,11 @@ onMounted(openNoticeModalView);
       <h1>로또 결과</h1>
     </div>
     <div>
-      <NumberGridModalView :isShow="isShowModal" :isNeeds="isNeeds" @close="closeModal">
+      <NumberGridModalView 
+        :isShow="isShowModal" 
+        :isNeeds="isNeeds" 
+        @close="closeModal"
+      >
         <template #default>
 
         </template>

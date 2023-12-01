@@ -1,6 +1,7 @@
 <script setup>
-import {computed, ref} from "vue";
+import {computed, ref, defineEmits} from "vue";
 
+const emit = defineEmits();
 const exceptList = ref([]);
 const needsList = ref([]);
 const numbers = computed(() => 
@@ -8,7 +9,7 @@ const numbers = computed(() =>
 );
 
 const closeModal = () => {
-    emit("close");
+  emit("close", {exceptList: exceptList.value, needsList: needsList.value});
 }
 
 const checkedNumber = (number, isNeeds) => {
@@ -16,16 +17,18 @@ const checkedNumber = (number, isNeeds) => {
     if (exceptList.value.includes(number)) {
       exceptList.value.splice(exceptList.value.indexOf(number), 1);
     }
-    if (!needsList.value.includes(number)) {
-      needsList.value.push(number);
-    }
+    if (needsList.value.includes(number)) {
+      needsList.value.splice(needsList.value.indexOf(number), 1);
+    } else needsList.value.push(number);
+
   } else {
     if (needsList.value.includes(number)) {
       needsList.value.splice(needsList.value.indexOf(number), 1);
     }
-    if (!exceptList.value.includes(number)) {
-      exceptList.value.push(number);
-    }
+
+    if (exceptList.value.includes(number)) {
+      exceptList.value.splice(exceptList.value.indexOf(number), 1);
+    } else exceptList.value.push(number);
   }
 };
 
@@ -33,10 +36,6 @@ defineProps({
     isShow: Boolean,
     isNeeds: Boolean
 });
-
-const emit = defineEmits(
-    ['close']
-);
 
 </script>
 
@@ -51,7 +50,7 @@ const emit = defineEmits(
         {{ number }}
       </button>
     </div>
-    <span class="close" @click="closeModal">&times;</span>
+    <span class="close" @click="closeModal">확인</span>
   </div>
 </div>
 </template>
@@ -80,7 +79,7 @@ const emit = defineEmits(
 }
 
 .close {
-  color: #aaa;
+  color: #1d0808;
   float: right;
   font-size: 28px;
   font-weight: bold;
