@@ -4,29 +4,32 @@ import NumberGridModalView from "./components/NumberGridModalView.vue"
 
 const exceptList = ref([]);
 const needsList = ref([]);
+const isNeeds = ref(false);
 const isShowModal = ref(false);
 
 const openNoticeModalView = () => {
-  alert("Welcome junsang-lotto site");
+  alert("Welcome Junsang-lotto site");
 }
 
-function closeModal() {
+const closeModal = () => {
   isShowModal.value = false;
 }
 
-function openModal() {
+const openModal = (needs) => {
+  console.log("needs :: ", needs)
   isShowModal.value = true;
+  isNeeds.value = needs;
 }
 
-function addExceptNumber() {
+const addExceptNumber = () => {
   alert("add except number button");
 }
 
-function addNeedsNumber() {
+const addNeedsNumber = () => {
   alert("add needs number button");
 }
 
-function welcomeNotice() {
+const welcomeNotice = () => {
   alert("준상 로또 페이지에 접속하신것을 진심으로 환영합니다!");
 }
 
@@ -40,13 +43,13 @@ onMounted(openNoticeModalView);
       <div class="except-container">
         <h1 class="title">제외할 번호 목록</h1>
         <div class="btn-add btn-except">
-          <button class="btn" @click="openModal">제외할 번호 추가하기</button>
+          <button class="btn" @click="openModal(false)">제외할 번호 추가하기</button>
         </div>
       </div>
       <div class="needs-container">
         <h1 class="title">포함되어야 할 번호 목록</h1>
         <div class="btn-add btn-needs">
-          <button @click="openModal">포함되어야 할 번호 추가하기</button>
+          <button @click="openModal(true)">포함되어야 할 번호 추가하기</button>
         </div>
       </div>
     </div>
@@ -54,7 +57,7 @@ onMounted(openNoticeModalView);
       <h1>로또 결과</h1>
     </div>
     <div>
-      <NumberGridModalView :isShow="isShowModal" @close="closeModal">
+      <NumberGridModalView :isShow="isShowModal" :isNeeds="isNeeds" @close="closeModal">
         <template #default>
 
         </template>

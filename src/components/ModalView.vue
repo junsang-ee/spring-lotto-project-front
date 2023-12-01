@@ -1,5 +1,5 @@
 <script setup>
-function closeModal() {
+const closeModal = () => {
     emit("close");
 }
 

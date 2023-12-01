@@ -1,48 +1,53 @@
 <script setup>
 import {computed, ref} from "vue";
 
-
+const exceptList = ref([]);
+const needsList = ref([]);
 const numbers = computed(() => 
     Array.from({ length: 45 }, (_, index) => index + 1)
 );
-
-const numberRows = computed(() => 
-    Math.ceil(numbers.value.length / 10)
-);
-
-const exceptList = ref([]);
 
 const closeModal = () => {
     emit("close");
 }
 
-
-const getNumbersInRow = (row) => {
-  const startIndex = row * 10;
-  const endIndex = Math.min((row + 1) * 10, numbers.value.length);
-  return numbers.value.slice(startIndex, endIndex);
-};
-
-const checkedNumber = (number) => {
-    exceptList.value.push(number);
-    alert("exceptList size :: " + exceptList.value.length);
+const checkedNumber = (number, isNeeds) => {
+  if (isNeeds) {
+    if (exceptList.value.includes(number)) {
+      exceptList.value.splice(exceptList.value.indexOf(number), 1);
+    }
+    if (!needsList.value.includes(number)) {
+      needsList.value.push(number);
+    }
+  } else {
+    if (needsList.value.includes(number)) {
+      needsList.value.splice(needsList.value.indexOf(number), 1);
+    }
+    if (!exceptList.value.includes(number)) {
+      exceptList.value.push(number);
+    }
+  }
 };
 
 defineProps({
-    isShow: Boolean
+    isShow: Boolean,
+    isNeeds: Boolean
 });
 
 const emit = defineEmits(
     ['close']
 );
+
 </script>
 
 <template>
 <div v-if="isShow" class="modal">
   <div class="modal-content">
-    
     <div class="number-grid">
-      <button v-for="number in numbers" :key="number" @click="checkedNumber(number)">
+      <button v-for="number in numbers" :key="number" 
+        @click="checkedNumber(number, isNeeds)"
+        :class="{'checkbox': true, 'checked-except': exceptList.includes(number), 'checked-needs': needsList.includes(number) }"
+      >
         {{ number }}
       </button>
     </div>
@@ -61,15 +66,17 @@ const emit = defineEmits(
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
-  background-color: #997d7d;
-  margin: 10% auto;
-  padding: 10px;
-  border: 1px solid #888;
-  width: 45%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
 }
 
 .close {
@@ -89,15 +96,27 @@ const emit = defineEmits(
 .number-grid {
   display: grid;
   grid-template-columns: repeat(10, 2fr);
-  gap: 3px;
+  gap: 5px;
+  flex-wrap: wrap;
 }
 
 .number-grid button {
   border-radius: 100%;
-  border: 2px;
+  border: 1px solid #ccc;
   font-size: 20px;
   font-weight: 600;
-  margin-left: 10px;
+  margin: 5px;
+  padding: 10px;
+  cursor: pointer;
 }
 
+.checked-except {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.checked-needs {
+  background-color: #37e17e;
+  color: #fff;
+}
 </style>
