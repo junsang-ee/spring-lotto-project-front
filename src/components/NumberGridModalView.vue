@@ -1,35 +1,60 @@
 <script setup>
 import {computed, ref, defineEmits} from "vue";
 
-const emit = defineEmits();
-const exceptList = ref([]);
-const needsList = ref([]);
+const checkedExcepts = ref([]);
+const checkedNeeds = ref([]);
 const numbers = computed(() => 
     Array.from({ length: 45 }, (_, index) => index + 1)
 );
 
+const emit = defineEmits(
+  ["close"]
+)
+
 const closeModal = () => {
-  emit("close", {exceptList: exceptList.value, needsList: needsList.value});
+  emit("close", {checkedExcepts: checkedExcepts.value, checkedNeeds: checkedNeeds.value});
 }
 
 const checkedNumber = (number, isNeeds) => {
   if (isNeeds) {
-    if (exceptList.value.includes(number)) {
-      exceptList.value.splice(exceptList.value.indexOf(number), 1);
+    if (checkedExcepts.value.includes(number)) {
+      checkedExcepts.value.splice(checkedExcepts.value.indexOf(number), 1);
     }
-    if (needsList.value.includes(number)) {
-      needsList.value.splice(needsList.value.indexOf(number), 1);
-    } else needsList.value.push(number);
-
+    if (checkedNeeds.value.includes(number)) {
+      checkedNeeds.value.splice(checkedNeeds.value.indexOf(number), 1);
+    } else {
+      if (validLotto(isNeeds)) {
+        checkedNeeds.value.push(number);
+      }
+    }
   } else {
-    if (needsList.value.includes(number)) {
-      needsList.value.splice(needsList.value.indexOf(number), 1);
+    if (checkedNeeds.value.includes(number)) {
+      checkedNeeds.value.splice(checkedNeeds.value.indexOf(number), 1);
     }
 
-    if (exceptList.value.includes(number)) {
-      exceptList.value.splice(exceptList.value.indexOf(number), 1);
-    } else exceptList.value.push(number);
+    if (checkedExcepts.value.includes(number)) {
+      checkedExcepts.value.splice(checkedExcepts.value.indexOf(number), 1);
+    } else {
+      if (validLotto(isNeeds)) {
+        checkedExcepts.value.push(number);
+      }
+    }
   }
+};
+
+const validLotto = (isNeeds) => {
+  if (isNeeds) {
+    if (checkedNeeds.value.length >= 6) {
+      alert("경고!!!\n포함할 로또 목록은 6개를 초과할 수 없습니다.");
+      return false;
+    }
+  } else {
+    if (checkedExcepts.value.length >= 39) {
+      alert("경고!!!\n제외할 로또 목록은 39개를 초과할 수 없습니다.");
+      return false;
+    }
+  }
+  return true;
 };
 
 defineProps({
@@ -41,11 +66,16 @@ defineProps({
 
 <template>
 <div v-if="isShow" class="modal">
+  
   <div class="modal-content">
+    <div>제외할 로또 목록 : 
+      <span></span>
+    </div>
+    <div>포함할 로또 목록 : </div>
     <div class="number-grid">
       <button v-for="number in numbers" :key="number" 
         @click="checkedNumber(number, isNeeds)"
-        :class="{'checkbox': true, 'checked-except': exceptList.includes(number), 'checked-needs': needsList.includes(number) }"
+        :class="{'checkbox': true, 'checked-except': checkedExcepts.includes(number), 'checked-needs': checkedNeeds.includes(number) }"
       >
         {{ number }}
       </button>
