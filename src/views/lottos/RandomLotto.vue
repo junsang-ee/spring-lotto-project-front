@@ -1,15 +1,26 @@
 <script setup>
-import { onMounted, ref} from "vue";
+import { computed, onMounted, ref} from "vue";
+import SelectLottoPop from "./SelectLottoPop.vue"
+import {read} from "../../utils/utils-axios.js";
 
-import { read } from "./utils/utils-axios.js";
-import router from "./router/router";
 
 const exceptList = ref([]);
 const needsList = ref([]);
 const isNeeds = ref(false);
 const isShowModal = ref(false);
-const boards = ref([]);
 const randomLottoList = ref([]);
+const resetNumber = ref(0);
+
+const resetConditionalList = (number) => {
+  resetNumber.value = number;
+  if (number == 1) {
+    exceptList.value = [];
+  } else if(number == 2){
+    needsList.value = [];
+  } else {
+    resetNumber.value = 0;
+  }
+}
 
 const closeModal = ({checkedExcepts, checkedNeeds}) => {
   exceptList.value = checkedExcepts;
@@ -49,13 +60,17 @@ const validLottoLength = () => {
   }
 }
 
-const getBoards = async () => {
-  console.log("getBoards!!");
+const getLottoList = async () => {
   try {
-    let requestUrl = "/api/board";
-    await read(requestUrl).then((response) => {
+    let requestUrl = "/api/lotto/random-list";
+    let price = 3000; 
+    await read(requestUrl, {
+      price: price,
+      exceptList: getConvertedToString(exceptList.value),
+      needsList: getConvertedToString(needsList.value)
+    }).then((response) => {
       if (response.data.code === 0) {
-        boards.value = response.data.data.boards;
+        randomLottoList.value = response.data.data.lottoList;
       } else {
         alert("Error : " + response.data.data.message);
       }
@@ -65,37 +80,90 @@ const getBoards = async () => {
   }
 }
 
-onMounted(getBoards);
+const sortedExceptList = computed(function() {
+  return exceptList.value.slice().sort((a, b) => a - b);
+})
+
+const sortedNeedsList = computed(function() {
+  return needsList.value.slice().sort((a, b) => a - b);
+})
+
 
 </script>
 
 <template>
-  <div>
-    <div class="container">
-      <div class="side-category-container">
-        <ul>
-          <li><router-link :to="{name:'RandomLotto'}"> 랜덤 로또 </router-link></li>
-          <li v-for="(board, idx) in boards" :key="idx">
-            <router-link :to="{
-              name:'PostList', 
-              params:{boardId:board.id}, 
-              query:{boardName:board.name}}"
-            > 
-            <span> {{ board.name }} </span>
-          </router-link>
-          </li>
-          <li><router-link to="/test">test</router-link></li>
-        </ul>
+  <div class="main-container">
+    <div class="except-container">
+      <div class="except-lotto-title">
+        제외한 목록
+        <div>
+          <span v-for="(element, index) in sortedExceptList" :key="index" class="needs-list">
+            <span v-if="index === (exceptList.length - 1)">{{ element }}</span>
+            <span v-else>{{ element }}, </span>
+          </span>
+        </div>
+        <div>
+          <button @click="openModal(false)" class="btn-except">제외할 로또 번호 추가하기</button>
+        </div>
+        
       </div>
-      <div class="main-container">
-        <div class="router">
-          <router-view :key="$route.path"/>
+    </div>
+    <div class="needs-container">
+      <div class="needs-lotto-title">
+        포함할 목록
+        <div>
+          <span v-for="(element, index) in sortedNeedsList" :key="index" class="needs-list">
+            <span v-if="index === (needsList.length - 1)">{{ element }}</span>
+            <span v-else>{{ element }}, </span>
+          </span>
+        </div>
+        <div>
+          <button @click="openModal(true)" class="btn-needs">포함할 로또 번호 추가하기</button>
         </div>
       </div>
     </div>
-
+    <div class="reset-btn-container">
+      <div class="except-reset-btn-container">
+        <button class="btn-reset-except" @click="resetConditionalList(1)">제외할 번호 초기화</button>
+      </div>
+      <div class="needs-reset-btn-container">
+        <button class="btn-reset-needs" @click="resetConditionalList(2)">포함할 번호 초기화</button>
+      </div>
+    </div>
   </div>
+  <div>
+    <button @click="getLottoList()">랜덤 번호 뽑기</button>
+  </div>
+  <div class="lotto-list-wrap">
+    <table class="tb-lotto-list">
+      <colgroup>
+        <col width="*" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>첫번째 번호</th>
+          <th>두번째 번호</th>
+          <th>세번째 번호</th>
+          <th>네번째 번호</th>
+          <th>다섯번째 번호</th>
+          <th>여섯번째 번호</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <div>
+    <SelectLottoPop 
+      :isShow="isShowModal" 
+      :isNeeds="isNeeds" 
+      @close="closeModal"
+      :resetNumber="resetNumber"
+    >
+      <template #default>
 
+      </template>
+    </SelectLottoPop>
+  </div>
   <!-- <div class="container">
     <div class="container">
       <div class="except-container">
@@ -156,93 +224,41 @@ onMounted(getBoards);
       </NumberGridModalView>
     </div>
   </div> -->
+
 </template>
 
 <style scoped>
-.container {
-  display: flex;
-  height: 100vh;
-}
 
-.side-category-container {
-  width: 20%;
-  background-color: #f0f0f0;
-  padding: 5px;
-}
-
-.main-container {
-  flex: 1;
-  padding: 20px;
-}
-
-.side-category-container ul {
-  list-style: none;
-  padding: 0;
-}
-
-
-/* .container {
-  display: flex;
-}
-
-.main {
-  display: flex;
-  width: 100%;
-  min-height: 100%;
-  height: 100%;
-}
-
-.menu-wrapper {
-  height: 100vh;
-  padding: 10px;
-  list-style-type: none;
-  width: 300px;
-  height: 100%;
-  padding: 30px 10px 0;
-  list-style-type: none;
-  width: 300px;
-  border-right: 1px solid #000;
-}
-
-.except-container, .needs-container {
-  flex: 1;
-  padding: 20px;
-  border: 1px solid #ccc; 
-}
-
-.title {
+.test {
   text-align: center;
 }
 
-.btn-add {
+.main-container {
+  display: flex;
+  border-bottom: 1px solid #1e1d1d;
+}
+
+.except-container,
+.needs-container {
+  flex: 1;
+  padding: 5px;
+}
+
+.needs-lotto-title,
+.except-lotto-title {
+  text-align: center;
+}
+
+.btn-except,
+.btn-needs {
   text-align: right;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color 0.25s;
+table {
+  width: 100%;
+  margin: 0 auto;
+  border-collapase: collapse;
+  text-align: center;
 }
-
-.except-list, .needs-list {
-  font-size: 25px;
-  border: 1px solid transparent;
-  margin-left: 10px;
-}
-
-.except-list-container, .needs-list-container {
-  font-size: 25px;
-  border: 1px solid transparent;
-}
-
-.random-lotto-element {
-  font-size: 30px;
-  border: 1px solid transparent;
-} */
 
 </style>

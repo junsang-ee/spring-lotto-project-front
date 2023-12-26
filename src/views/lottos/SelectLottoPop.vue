@@ -1,15 +1,13 @@
 <script setup>
-import {computed, ref, defineEmits} from "vue";
+
+import {computed, ref, defineEmits, watch} from "vue";
 
 const checkedExcepts = ref([]);
 const checkedNeeds = ref([]);
 const numbers = computed(() => 
     Array.from({ length: 45 }, (_, index) => index + 1)
 );
-
-const emit = defineEmits(
-  ["close"]
-)
+const emit = defineEmits(["close"]);
 
 const closeModal = () => {
   emit("close", {checkedExcepts: checkedExcepts.value, checkedNeeds: checkedNeeds.value});
@@ -57,21 +55,44 @@ const validLotto = (isNeeds) => {
   return true;
 };
 
-defineProps({
-    isShow: Boolean,
-    isNeeds: Boolean
+const resetConditionalList = (resetType) => {
+  if (resetType === 1) {
+    checkedExcepts.value = [];
+  } else if (resetType === 2) {
+    checkedNeeds.value = [];
+  } else {
+    resetType = 0;
+  }
+  resetType = 0;
+}
+
+const props = defineProps({
+    isShow: {
+      Type: Boolean,
+      required: true
+    },
+    isNeeds: {
+      Type: Boolean,
+      required: true
+    },
+    resetNumber : {
+      Type: Number,
+      required: false
+    }
 });
+
+watch(() => props.resetNumber, (resetNumber) => {
+  resetConditionalList(resetNumber);
+})
 
 </script>
 
 <template>
-<div v-if="isShow" class="modal">
+<div v-if="isShow" class="modal-container">
   
   <div class="modal-content">
-    <div>제외할 로또 목록 : 
-      <span></span>
-    </div>
-    <div>포함할 로또 목록 : </div>
+    <div> 🔴 제외 목록 </div>
+    <div> 🟢 포함 목록 </div>
     <div class="number-grid">
       <button v-for="number in numbers" :key="number" 
         @click="checkedNumber(number, isNeeds)"
@@ -87,15 +108,17 @@ defineProps({
 
 <style scope>
 
-.modal {
+.modal-container {
   position: fixed;
-  z-index: 1;
-  left: 0;
   top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5); 
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
+  height: 100vh;
 }
 
 .modal-content {
@@ -124,8 +147,8 @@ defineProps({
 
 .number-grid {
   display: grid;
-  grid-template-columns: repeat(10, 2fr);
-  gap: 5px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
   flex-wrap: wrap;
 }
 
@@ -134,8 +157,8 @@ defineProps({
   border: 1px solid #ccc;
   font-size: 20px;
   font-weight: 600;
-  margin: 5px;
-  padding: 10px;
+  margin: 3px;
+  padding: 5px;
   cursor: pointer;
 }
 
