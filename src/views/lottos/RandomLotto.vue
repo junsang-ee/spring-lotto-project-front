@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, ref} from "vue";
 import SelectLottoPop from "./SelectLottoPop.vue"
-import {read} from "../../utils/utils-axios.js";
+import {read} from "../../utils/util-axios.js";
 
 
 const exceptList = ref([]);
@@ -103,7 +103,7 @@ const sortedNeedsList = computed(function() {
           </span>
         </div>
         <div>
-          <button @click="openModal(false)" class="btn-except">제외할 로또 번호 추가하기</button>
+          <v-btn variant="tonal" @click="openModal(false)" class="btn-except">제외할 로또 번호 추가하기</v-btn>
         </div>
         
       </div>
@@ -118,16 +118,16 @@ const sortedNeedsList = computed(function() {
           </span>
         </div>
         <div>
-          <button @click="openModal(true)" class="btn-needs">포함할 로또 번호 추가하기</button>
+          <v-btn variant="tonal" @click="openModal(true)" class="btn-needs">포함할 로또 번호 추가하기</v-btn>
         </div>
       </div>
     </div>
     <div class="reset-btn-container">
       <div class="except-reset-btn-container">
-        <button class="btn-reset-except" @click="resetConditionalList(1)">제외할 번호 초기화</button>
+        <v-btn variant="tonal" class="btn-reset-except" @click="resetConditionalList(1)">제외할 번호 초기화</v-btn>
       </div>
       <div class="needs-reset-btn-container">
-        <button class="btn-reset-needs" @click="resetConditionalList(2)">포함할 번호 초기화</button>
+        <v-btn variant="tonal" class="btn-reset-needs" @click="resetConditionalList(2)">포함할 번호 초기화</v-btn>
       </div>
     </div>
   </div>
@@ -252,6 +252,10 @@ const sortedNeedsList = computed(function() {
 .btn-except,
 .btn-needs {
   text-align: right;
+}
+
+.btn-reset-needs {
+  margin-top: 5px;
 }
 
 table {

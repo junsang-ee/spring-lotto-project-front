@@ -1,16 +1,18 @@
 <script setup>
 import { onMounted, ref} from "vue";
+import { read } from "@/utils/util-axios.js";
+import { useRouter} from "vue-router";
 
-import { read } from "./utils/utils-axios.js";
-import router from "./router/router";
-
+const router = useRouter();
 const exceptList = ref([]);
 const needsList = ref([]);
 const isNeeds = ref(false);
 const isShowModal = ref(false);
 const boards = ref([]);
-const randomLottoList = ref([]);
 
+const testLogin = () => {
+  router.replace({name: "Login"})
+}
 const closeModal = ({checkedExcepts, checkedNeeds}) => {
   exceptList.value = checkedExcepts;
   needsList.value = checkedNeeds;
@@ -50,19 +52,19 @@ const validLottoLength = () => {
 }
 
 const getBoards = async () => {
-  console.log("getBoards!!");
   try {
-    let requestUrl = "/api/board";
-    await read(requestUrl).then((response) => {
-      if (response.data.code === 0) {
-        boards.value = response.data.data.boards;
-      } else {
-        alert("Error : " + response.data.data.message);
-      }
-    })
+    const res = await read("/api/board");
+    boards.value = res.data.data.boards;
   } catch (e) {
     console.log(e.message);
   }
+}
+
+const goComponent = (componentName, boardId) => {
+  if (boardId) {
+    router.push({name:componentName, params:{boardId:boardId}});
+  } else
+    router.push({name:componentName});
 }
 
 onMounted(getBoards);
@@ -70,7 +72,9 @@ onMounted(getBoards);
 </script>
 
 <template>
-  <div>
+  
+  <!-- <div>
+    <v-toolbar title="Application"></v-toolbar>
     <div class="container">
       <div class="side-category-container">
         <ul>
@@ -93,73 +97,57 @@ onMounted(getBoards);
         </div>
       </div>
     </div>
-
-  </div>
-
-  <!-- <div class="container">
-    <div class="container">
-      <div class="except-container">
-        <h1 class="title">제외할 번호 목록</h1>
-        <div>
-          <span v-for="element in exceptList" :key="element" class="except-list">
-            {{ element }}
-          </span>
-        </div>
-        <div class="btn-add btn-except">
-          <button class="btn" @click="openModal(false)">제외할 번호 추가하기</button>
-        </div>
-      </div>
-      <div class="needs-container">
-        <h1 class="title">포함할 번호 목록</h1>
-        <div class="btn-add btn-needs">
-          <button @click="openModal(true)">포함할 번호 추가하기</button>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="except-list-container">제외한 로또 번호 목록 :
-        <span v-for="element in exceptList" :key="element" class="except-list">
-          {{ element }}
-        </span>
-      </div>
-      <div class="needs-list-container">포함할 로또 번호 목록 :
-        <span v-for="element in needsList" :key="element" class="needs-list">
-          {{ element }}
-        </span>
-      </div>      
-      <div>
-        <button @click="getLottoList">test getRandomList Button</button>
-      </div>
-    </div>
-    <div class="random-lotto-result-container">
-      <div> 랜덤 로또 결과 </div>
-      <div class="random-lotto-result">
-        <div v-for="lotto in randomLottoList" :key="lotto" class="random-lotto-result-list">
-          <span class="random-lotto-element first-number">{{ lotto.firstNumber }}, </span>
-          <span class="random-lotto-element second-number">{{ lotto.secondNumber }}, </span>
-          <span class="random-lotto-element third-number">{{ lotto.thirdNumber }}, </span>
-          <span class="random-lotto-element fourth-number">{{ lotto.fourthNumber }}, </span>
-          <span class="random-lotto-element fifth-number">{{ lotto.fifthNumber }}, </span>
-          <span class="random-lotto-element sixth-number"> {{ lotto.sixthNumber }}</span>
-        </div>
-      </div>
-    </div>
-    <div>
-      <NumberGridModalView 
-        :isShow="isShowModal" 
-        :isNeeds="isNeeds" 
-        @close="closeModal"
-      >
-        <template #default>
-
-        </template>
-      </NumberGridModalView>
-    </div>
   </div> -->
+  <!-- <v-app>
+    <v-navigation-drawer>
+      <v-list-item title="My Application" subtitle="Login"></v-list-item>
+      <v-divider></v-divider>
+      <v-list-item><router-link :to="{name:'RandomLotto'}"> 랜덤 로또 </router-link></v-list-item>
+      <v-list-item v-for="board in boards" :key='board.id'>
+        <router-link :to="{name:'PostList', params:{boardId:board.id}}"> {{ board.name }} </router-link>
+      </v-list-item>
+
+    </v-navigation-drawer>
+    <div class="router">
+      <router-view :key="$route.path"/>
+    </div>
+  </v-app> -->
+  <v-card>
+    <v-tabs v-model="tab" bg-color="primary">
+      <v-tab value="login">
+        <span @click="goComponent('Login')">로그인</span>
+      </v-tab>
+      <v-tab value="random-lotto">
+        <!-- <router-link :to="{name:'RandomLotto'}"> 
+          
+        </router-link> -->
+        <span @click="goComponent('RandomLotto')">랜덤 로또</span>
+      </v-tab>
+      <v-tab v-for="board in boards" :key='board.id' value="free-board">
+        <span @click="goComponent('PostList', board.id)">{{ board.name }}</span>
+      </v-tab>
+    </v-tabs>
+    <v-card-text>
+      <v-window v-model="tab">
+        <v-window-item value="login">
+          로그인
+        </v-window-item>
+        <v-window-item value="random-lotto">
+          랜덤 로또
+        </v-window-item>
+        <v-window-item value="free-board">
+          자유게시판
+        </v-window-item>
+      </v-window>
+    </v-card-text>
+  </v-card>
+  <div class="router">
+    <router-view :key="$route.path"/>
+  </div>
 </template>
 
 <style scoped>
-.container {
+/* .container {
   display: flex;
   height: 100vh;
 }
@@ -178,7 +166,7 @@ onMounted(getBoards);
 .side-category-container ul {
   list-style: none;
   padding: 0;
-}
+} */
 
 
 /* .container {
@@ -244,5 +232,9 @@ button {
   font-size: 30px;
   border: 1px solid transparent;
 } */
+
+.tab-title {
+  border: 1px solid transparent;
+}
 
 </style>

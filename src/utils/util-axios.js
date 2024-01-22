@@ -1,4 +1,4 @@
-import { $axios } from "../plugins/axios-plugin";
+import { $axios } from "@/plugins/axios-plugin";
 
 
 /**
