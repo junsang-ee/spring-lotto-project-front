@@ -11,5 +11,8 @@ export const useUserInfoStore = defineStore("userInfo", () => {
   const getInfo = () => userInfo.value;
 
   const reset = () => setInfo(null);
-  return { setInfo, getInfo, userInfo, reset }
+  
+  const isNullable = () => getInfo() === null;
+
+  return { setInfo, getInfo, userInfo, reset, isNullable }
 }, { persist: true })

@@ -1,8 +1,7 @@
 <script setup>
-import { computed, onMounted, ref} from "vue";
-import SelectLottoPop from "./SelectLottoPop.vue"
-import {read} from "../../utils/util-axios.js";
-
+import { computed, ref} from "vue";
+import SelectLottoPop from "@/views/lottos/SelectLottoPop.vue"
+import {read} from "@/utils/util-axios.js";
 
 const exceptList = ref([]);
 const needsList = ref([]);
@@ -10,6 +9,7 @@ const isNeeds = ref(false);
 const isShowModal = ref(false);
 const randomLottoList = ref([]);
 const resetNumber = ref(0);
+
 
 const resetConditionalList = (number) => {
   resetNumber.value = number;
@@ -37,10 +37,6 @@ const addExceptNumber = () => {
   alert("add except number button");
 }
 
-const addNeedsNumber = () => {
-  alert("add needs number button");
-}
-
 const getConvertedToString = (list) => {
   if (!list.length) 
     return null;
@@ -62,8 +58,8 @@ const validLottoLength = () => {
 
 const getLottoList = async () => {
   try {
-    let requestUrl = "/api/lotto/random-list";
-    let price = 3000; 
+    let requestUrl = "/api/lotto/random";
+    let price = 3000;
     await read(requestUrl, {
       price: price,
       exceptList: getConvertedToString(exceptList.value),
@@ -76,7 +72,7 @@ const getLottoList = async () => {
       }
     })
   } catch (e) {
-    console.log(e.message);
+    alert(e.message);
   }
 }
 
@@ -160,78 +156,12 @@ const sortedNeedsList = computed(function() {
       :resetNumber="resetNumber"
     >
       <template #default>
-
       </template>
     </SelectLottoPop>
   </div>
-  <!-- <div class="container">
-    <div class="container">
-      <div class="except-container">
-        <h1 class="title">제외할 번호 목록</h1>
-        <div>
-          <span v-for="element in exceptList" :key="element" class="except-list">
-            {{ element }}
-          </span>
-        </div>
-        <div class="btn-add btn-except">
-          <button class="btn" @click="openModal(false)">제외할 번호 추가하기</button>
-        </div>
-      </div>
-      <div class="needs-container">
-        <h1 class="title">포함할 번호 목록</h1>
-        <div class="btn-add btn-needs">
-          <button @click="openModal(true)">포함할 번호 추가하기</button>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="except-list-container">제외한 로또 번호 목록 :
-        <span v-for="element in exceptList" :key="element" class="except-list">
-          {{ element }}
-        </span>
-      </div>
-      <div class="needs-list-container">포함할 로또 번호 목록 :
-        <span v-for="element in needsList" :key="element" class="needs-list">
-          {{ element }}
-        </span>
-      </div>      
-      <div>
-        <button @click="getLottoList">test getRandomList Button</button>
-      </div>
-    </div>
-    <div class="random-lotto-result-container">
-      <div> 랜덤 로또 결과 </div>
-      <div class="random-lotto-result">
-        <div v-for="lotto in randomLottoList" :key="lotto" class="random-lotto-result-list">
-          <span class="random-lotto-element first-number">{{ lotto.firstNumber }}, </span>
-          <span class="random-lotto-element second-number">{{ lotto.secondNumber }}, </span>
-          <span class="random-lotto-element third-number">{{ lotto.thirdNumber }}, </span>
-          <span class="random-lotto-element fourth-number">{{ lotto.fourthNumber }}, </span>
-          <span class="random-lotto-element fifth-number">{{ lotto.fifthNumber }}, </span>
-          <span class="random-lotto-element sixth-number"> {{ lotto.sixthNumber }}</span>
-        </div>
-      </div>
-    </div>
-    <div>
-      <NumberGridModalView 
-        :isShow="isShowModal" 
-        :isNeeds="isNeeds" 
-        @close="closeModal"
-      >
-        <template #default>
-
-        </template>
-      </NumberGridModalView>
-    </div>
-  </div> -->
-
 </template>
 
 <style scoped>
-
-.test {
-  text-align: center;
-}
 
 .main-container {
   display: flex;
@@ -261,7 +191,7 @@ const sortedNeedsList = computed(function() {
 table {
   width: 100%;
   margin: 0 auto;
-  border-collapase: collapse;
+  border-collapse: collapse;
   text-align: center;
 }
 

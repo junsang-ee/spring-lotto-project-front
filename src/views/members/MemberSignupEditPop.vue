@@ -61,7 +61,7 @@
             size="x-large"
             color="#317aa9"
             @click="doApi"
-            :disabled="isEnabledKeepButton()"
+            :disabled="isEnableKeepButton()"
             :loading="isLoading"
           > 
             {{ buttonValue }}
@@ -82,13 +82,11 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
 import { write } from "@/utils/util-axios";
 import { SignupState} from "@/constants/signup-state.js";
 
 const state = ref(null);
 const signupProcedureNotice = ref(null);
-const router = useRouter();
 const isShowModal = ref(false);
 const isValid = ref(null);
 const isLoading = ref(false);
@@ -115,7 +113,7 @@ const signupInfo = ref({
   password: null
 });
 
-const isEnabledKeepButton = () => {
+const isEnableKeepButton = () => {
   switch(state.value) {
     case SignupState.ENTER_EMAIL:
       return !emailRuleConfig.test(signupInfo.value.email);

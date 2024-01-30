@@ -17,7 +17,7 @@
                   href="#" 
                   class="text-body-2 font-weight-regular"
                 >
-                  비밀번호가 기억이 안나시나요?
+                  <reset-password-edit-pop/>
                 </a>
 
                 <v-btn 
@@ -45,12 +45,13 @@ import { tokenValidator } from "@/utils/util-auth";
 import { useTokenStore } from "@/store/auth";
 import { useUserInfoStore } from "@/store/user";
 import SignupEditPop from "@/views/members/MemberSignupEditPop.vue";
+import ResetPasswordEditPop from "@/views/members/ResetPasswordEditPop.vue";
 
 const router = useRouter();
 const email = ref(null);
 const password = ref(null);
 const $token = useTokenStore();
-const $info = useUserInfoStore();
+const $userInfo = useUserInfoStore();
 const isValid = ref(null);
 
 const emailRuleConfig = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}])|(([a-zA-Z\-\d]+\.)+[a-zA-Z]{2,}))$/;
@@ -69,17 +70,17 @@ const doLogin = async () => {
   const {valid} = await isValid.value.validate();
   try {
     if (valid) {
-      const data = await write("/api/auth/login", null, {
+      const result = await write("/api/auth/login", null, {
         email: email.value,
         password: password.value,
       });
-      const token = tokenValidator(data.data?.data?.jwt);
+      const token = tokenValidator(result.data?.data?.jwt);
       $token.setToken(token);
 
       const myInfo = await read("/api/user/me");
-      $info.setInfo(myInfo.data.data);
+      $userInfo.setInfo(myInfo.data.data);
       router.replace({name: "RandomLotto"});
-    } else 
+    } else
       alert("이메일 또는 비밀번호를 확인하세요.");
   } catch (e) {
     console.log(e);

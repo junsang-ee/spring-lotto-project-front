@@ -1,5 +1,5 @@
 import jwtDecoder from "jwt-decode";
-
+import router from "@/router/router";
 const tokenValidator = (token) => {
     if (token) {
       console.log(`auth token : ${token}`);
@@ -14,7 +14,7 @@ const tokenValidator = (token) => {
         return token;
       } else new Error("Login");
     } else {
-      throw new Error("Login");
+      new Error("Login");
     }
   };
 
