@@ -44,8 +44,8 @@ import { read, write } from "@/utils/util-axios";
 import { tokenValidator } from "@/utils/util-auth";
 import { useTokenStore } from "@/store/auth";
 import { useUserInfoStore } from "@/store/user";
-import SignupEditPop from "@/views/members/MemberSignupEditPop.vue";
-import ResetPasswordEditPop from "@/views/members/ResetPasswordEditPop.vue";
+import SignupEditPop from "@/views/users/UserSignupEditPop.vue";
+import ResetPasswordEditPop from "@/views/users/ResetPasswordEditPop.vue";
 
 const router = useRouter();
 const email = ref(null);
