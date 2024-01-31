@@ -63,6 +63,14 @@ const getIsLogOffed = () => {
   return $auth.isNullable() && $userInfo.isNullable();
 }
 
+const test = () => {
+  let userInfo = $userInfo.getInfo();
+  let role = JSON.stringify(userInfo.role);
+  console.log("JSON.stringify(userInfo.role) :: " + JSON.stringify(userInfo.role));
+  console.log("role :: " + role);
+  return role === 'USER';
+}
+  
 </script>
 
 <template>
@@ -80,9 +88,22 @@ const getIsLogOffed = () => {
         <v-tab value="random-lotto">
           <span @click="goComponent('RandomLotto')">랜덤 로또</span>
         </v-tab>
-        <v-tab v-for="board in boards" :key='board.id'>
-          <span @click="goComponent('PostList', board.id, board.name)">{{ board.name }}</span>
-        </v-tab>
+        <div v-if="test()">
+          <v-tab value="random-lotto">
+            <span @click="goComponent('RandomLotto')">게시물 관리</span>
+          </v-tab>
+          <v-tab value="random-lotto">
+            <span @click="goComponent('RandomLotto')">유저 관리</span>
+          </v-tab>
+          <v-tab value="random-lotto">
+            <span @click="goComponent('RandomLotto')">LottoHistory 관리</span>
+          </v-tab>
+        </div>
+        <div v-else>
+          <v-tab v-for="board in boards" :key='board.id'>
+            <span @click="goComponent('PostList', board.id, board.name)">{{ board.name }}</span>
+          </v-tab>
+        </div>
       </div>
     </v-tabs>
     <v-card-text>
@@ -94,14 +115,29 @@ const getIsLogOffed = () => {
         </div>
         <div v-else>
           <v-window-item value="loginOut">
-            로그아웃
+            내 정보
           </v-window-item>
           <v-window-item value="random-lotto">
             랜덤 로또
           </v-window-item>
-          <v-window-item v-for="board in boards" :key='board.id'>
-            <span>{{board.name}}</span>
-          </v-window-item>
+          <div v-if="test()">
+            <v-window-item value="게시물 관리">
+              게시물 관리
+            </v-window-item>
+            <v-window-item value="유저 관리">
+              유저 관리
+            </v-window-item>
+            <v-window-item value="LottoHistory 관리">
+              LottoHistory 관리
+            </v-window-item>            
+          </div>
+          <div v-else>
+            <v-window-item v-for="board in boards" :key='board.id'>
+              <span>{{board.name}}</span>
+            </v-window-item>
+          </div>
+
+
         </div>
       </v-window>
     </v-card-text>
