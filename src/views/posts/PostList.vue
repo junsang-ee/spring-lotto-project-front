@@ -1,7 +1,6 @@
 <template>
     <v-container>
         <v-card flat>
-            
             <v-card-title>
                 <v-text-field
                 v-model="search"
@@ -86,13 +85,12 @@ const getPosts = async () => {
     }
 }
 
-const goWritePost = async () => {
-    if ($token.isNullable() && $userInfo.isNullable()) {
-        alert("로그인이 필요한 서비스 입니다.");
-        router.replace({name:"Login"});
-        return;
-    }
-    router.push({name: "PostEditor", params:{boardId:boardId.value}})
+const goWritePost = () => {
+    router.push({
+        name: "PostEditor", 
+        params:{boardId:boardId.value},
+        query:{boardName:boardName}
+    });
 }
 
 const goPostDetail = (event, { item } ) => {

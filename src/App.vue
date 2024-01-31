@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { ref } from "vue";
 import { read } from "@/utils/util-axios.js";
 import { useRouter} from "vue-router";
 import { useTokenStore } from "@/store/auth";
@@ -13,6 +13,7 @@ const $userInfo = useUserInfoStore();
 
 
 router.beforeEach((to, from, next) => {
+  document.title = "JunsangLotto";
   if (to?.name?.startsWith("Login")) {
     $auth.reset()
     $userInfo.reset();
@@ -24,8 +25,12 @@ router.beforeEach((to, from, next) => {
         next();
       }
     } catch (toPath) {
-      if (from.name === "Login") next(false);
-      else next({name: toPath});
+      if (from.name === "Login") {
+        next(false);
+      } else {
+        next({name: toPath});
+      }
+       
     }
   }
 })
@@ -54,8 +59,6 @@ const logout = () => {
   }
 }
 
-// onMounted(getBoards);
-
 const getIsLogOffed = () => {
   return $auth.isNullable() && $userInfo.isNullable();
 }
@@ -72,7 +75,7 @@ const getIsLogOffed = () => {
       </div>
       <div v-else>
         <v-tab value="loginOut">
-          <span @click="logout">로그아웃</span>
+          <span @click="logout">내 정보</span>
         </v-tab>
         <v-tab value="random-lotto">
           <span @click="goComponent('RandomLotto')">랜덤 로또</span>

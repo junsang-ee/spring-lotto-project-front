@@ -6,10 +6,10 @@ import PostEditor from "@/views/posts/PostEditor.vue";
 import Login from "@/views/Login.vue";
 
 const routes = [
-    { path: '/random-lotto', name: 'RandomLotto', component: RandomLotto, meta: {title: "랜덤 로또"}},
-    { path: '/post-list/:boardId', name: 'PostList', component: PostList, meta: {title: "게시글 리스트"}},
-    { path: '/post-edit/:boardId', name: 'PostEditor', component: PostEditor, meta: {title: "게시글 작성"} },
-    { path: '/post-detail/:postId', name: 'PostDetail', component: PostDetail, meta: {title: "게시글 상세"} },
+    { path: '/random-lotto', name: 'RandomLotto', component: RandomLotto},
+    { path: '/post-list/:boardId', name: 'PostList', component: PostList},
+    { path: '/post-edit/:boardId', name: 'PostEditor', component: PostEditor},
+    { path: '/post-detail/:postId', name: 'PostDetail', component: PostDetail},
     { path: '/login', name:'Login', component: Login },
 
 ]

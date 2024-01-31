@@ -1,7 +1,6 @@
 import Axios from "axios";
 import { useTokenStore } from "@/store/auth";
 import { useLoadingStore } from "@/store/loading";
-import { useUserInfoStore } from "@/store/user";
 import router from "@/router/router";
 
 Axios.defaults.timeout = 10 * 1000;
@@ -14,7 +13,6 @@ const vueAxios = {
     async install(app) {
       const $auth = useTokenStore(); 
       const $loading = useLoadingStore();
-      const $user = useUserInfoStore();
 
       $axios.defaults.baseURL = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}`;
 
@@ -26,7 +24,6 @@ const vueAxios = {
             $loading.setLoading(true);
           }
           let token = $auth.getToken();
-          console.log("axios plugin token :: " + token);
           if (token) {
             config.headers.Authorization = `${token}`;
           }
@@ -48,8 +45,6 @@ const vueAxios = {
           if (error.response) {
             switch (error.response.status) {
               case 403:
-                $auth.reset();
-                $user.reset();
                 alert("세션이 만료됐습니다.");
                 router.replace({name:"Login"});
                 break;
