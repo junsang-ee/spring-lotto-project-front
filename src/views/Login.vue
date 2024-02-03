@@ -11,6 +11,7 @@
                 <v-text-field 
                   v-model="password" 
                   label="비밀번호"
+                  type="password"
                   :rules="passwordRule">
                 </v-text-field>
                 <a 
@@ -24,9 +25,8 @@
                   color="primary"
                   block class="mt-2" 
                   @click="doLogin"
-                >
-                  로그인
-                </v-btn>
+                  text="로그인"
+                />
             </v-form>
             <div class="mt-2">
                 <p class="text-body-2">아직 JunsangLotto Member 가 아니신가요? 

@@ -88,26 +88,41 @@ watch(() => props.resetNumber, (resetNumber) => {
 </script>
 
 <template>
-<div v-if="isShow" class="modal-container">
-  
-  <div class="modal-content">
-    <div> 🔴 제외 목록 </div>
-    <div> 🟢 포함 목록 </div>
-    <div class="number-grid">
-      <button v-for="number in numbers" :key="number" 
-        @click="checkedNumber(number, isNeeds)"
-        :class="{'checkbox': true, 'checked-except': checkedExcepts.includes(number), 'checked-needs': checkedNeeds.includes(number) }"
-      >
-        {{ number }}
-      </button>
+  <v-container v-if="isShow" class="modal-container" fluid>
+    <div class="modal-content">
+      <v-row>
+        <v-col> 🔴 제외 목록 </v-col>
+        <v-col> 🟢 포함 목록 </v-col>
+      </v-row>
+      <div class="number-grid">
+        <button v-for="number in numbers" :key="number" 
+          @click="checkedNumber(number, isNeeds)"
+          :class="{'checkbox': true, 
+                  'checked-except': checkedExcepts.includes(number),
+                  'checked-needs': checkedNeeds.includes(number) 
+                  }">
+          {{ number }}
+        </button>
+      </div>
+      <v-row>
+        <v-col cols="12">
+          <v-btn
+            block 
+            color="primary" 
+            @click="closeModal"
+            text="확인"
+            style="margin-top: 15px;"
+          />
+        </v-col>
+      </v-row>
     </div>
-    <span class="close" @click="closeModal">확인</span>
-  </div>
-</div>
-</template>
+  </v-container>
+</template> 
 
 <style scope>
-
+.close {
+  text-align: center;
+}
 .modal-container {
   position: fixed;
   top: 0;

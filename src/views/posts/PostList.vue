@@ -1,12 +1,16 @@
 <template>
     <v-container>
         <v-card flat>
+            <v-card-title align="center" style="font-size: 30px; margin-bottom: 20px">
+                {{boardName}}
+            </v-card-title>
             <v-card-title>
                 <v-text-field
-                v-model="search"
-                label="검색"
-                single-line
-                hide-details/>
+                    v-model="search"
+                    label="검색"
+                    single-line
+                    hide-details
+                />
             </v-card-title>
             <v-col justify="end" align="end">
                 <v-btn variant="tonal" @click="goWritePost">게시글 작성하기</v-btn>
@@ -14,26 +18,28 @@
             <v-data-table
                 :headers="tableHeaders"
                 :items="posts"
-                :dark="true"
                 :search="search"
                 :page.sync="page"
                 :items-per-page="pageSize"
                 @click:row="goPostDetail"
-                hide-default-footer/>
+                hide-default-footer>
+                <template v-slot:no-data>
+                    <v-alert :value="true" icon="mdi-alert">
+                        아직 게시글이 없습니다.
+                    </v-alert>
+                </template>
+            </v-data-table>
             <v-row class="text-center px-4 align-center" wrap>
                 <v-col class="text-truncate" cols="12" md="2">
                     Total {{ totalCount }} records
                 </v-col>
-
                 <v-col cols="12" md="6">
                     <v-pagination
                         v-model="page"
                         :length="getPageCount"
                     />
                 </v-col>
-
             </v-row>
-            
         </v-card>
   </v-container>
 </template>
