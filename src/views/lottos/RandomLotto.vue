@@ -71,6 +71,7 @@
     </v-row>
 
 <v-row class="d-flex justify-end" align="center">
+
   <v-col cols="1">
     <v-select
       v-model="price"
@@ -79,6 +80,13 @@
       return-object
       solo
       dense
+    />
+  </v-col>
+  <v-col cols="auto">
+    <v-btn
+      color="primary"
+      @click="resetRandomLottoList"
+      text="랜덤 번호 초기화"
     />
   </v-col>
   <v-col cols="auto">
@@ -147,6 +155,12 @@ const showCustomPrice = ref(false);
 
 const customPrice = ref("");
 
+const resetRandomLottoList = () => {
+  if (randomLottoList.value.length === 0) return;
+  if (confirm("발급받은 랜덤 로또 번호를 초기화하시겠습니까?"))
+    randomLottoList.value = [];
+}
+
 const isEnableResetNeeds = () => needsList.value.length === 0;
 
 const isEnableResetExcepts = () => exceptList.value.length === 0;
@@ -194,7 +208,12 @@ const convertList = (list) => {
   return list.join(",");
 }
 
-const convertToNumber = (val) => parseInt(val.replace(/,/g, ""));
+const getConvertedPrice = (val) => {
+  if (val)
+    return parseInt(val.replace(/,/g, ""));
+  alert("금액을 선택하지 않았습니다.\n금액 미선택 시, 5개의 랜덤 로또 번호를 발급합니다.");
+  return 5000;
+}
 
 
 const validLottoLength = () => {
@@ -206,15 +225,14 @@ const validLottoLength = () => {
   }
 }
 
-const getLottoList = async () => {
+const getLottoList = async() => {
   try {
     const response = await read("/api/lotto/random", {
-      price: convertToNumber(price.value),
+      price: getConvertedPrice(price.value),
       exceptList: convertList(exceptList.value),
       needsList: convertList(needsList.value)
     })
     randomLottoList.value = response.data.data.lottoList;
-
   } catch (e) {
     alert(e.message)
   }

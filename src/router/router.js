@@ -18,7 +18,7 @@ const routes = [
     { path: '/user-manage', name: 'UserManage', component: UserManage},
     { path: '/post-manage', name: 'PostManage', component: PostManage},
     { path: '/lotto-history-manage', name: 'LottoHistoryManage', component: LottoHistoryManage},
-    { path: '/edit/', name: 'UserEdit', component: UserEdit},
+    { path: '/edit', name: 'UserEdit', component: UserEdit},
     { path: '/login', name:'Login', component: Login },
 
 ]
