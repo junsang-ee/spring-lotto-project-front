@@ -82,10 +82,12 @@ import { update } from "@/utils/util-axios.js";
 import { useRouter } from "vue-router";
 import { useUserInfoStore } from "@/store/user";
 import { useTokenStore } from "@/store/auth";
+import { useLottoStore } from "@/store/lotto";
 
 const router = useRouter();
 const $userInfo = useUserInfoStore();
 const $auth = useTokenStore();
+const $lotto = useLottoStore();
 const isShowPasswordModal = ref(false);
 const email = $userInfo.getInfo().email;
 const currentPassword = ref(null);
@@ -131,6 +133,7 @@ const logout = () => {
   if (confirm("로그아웃 하시겠습니까?")) {
     $auth.reset();
     $userInfo.reset();
+    $lotto.reset();
     router.replace({name:"Login"});
   }
 }

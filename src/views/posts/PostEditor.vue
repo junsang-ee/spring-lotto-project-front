@@ -53,14 +53,14 @@ const boardName = route.query.boardName;
 const boardId = route.params.boardId;
 const isPrivate = ref(false);
 const isValid = ref(false);
-const textRuleConfig = /^\S+$/;
+const textRuleConfig = /^\S.*\S$/;
 const passwordRuleConfig = /^\d{4}$/;
 
 const titleRule = [
-    v => textRuleConfig.test(v) || "제목을 입력해주세요.(공백제외)"
+    v => textRuleConfig.test(v) || "제목을 입력해주세요. (첫 글자 공백 제한, 두 글자 이상)"
 ]
 const contentRule = [
-    v => textRuleConfig.test(v) || "내용을 입력해주세요.(공백제외)"
+    v => textRuleConfig.test(v) || "내용을 입력해주세요.(첫 글자 공백 제한, 두 글자 이상)"
 ]
 const passwordRule = [
     v => passwordRuleConfig.test(v) || "게시글의 비밀번호는 4자리의 숫자로 입력하여야 합니다.(공백제외)"
@@ -70,13 +70,17 @@ const post = ref({
     title: "",
     content: "",
     password: null,
-    disclosureType: isPrivate.value ? "PRIVATE" : "PUBLIC"
+    disclosureType: "PRIVATE"
 });
 
 const registerPost = async () => {
     const {valid} = await isValid.value.validate();
     try {
         if (valid) {
+            if (!isPrivate.value) {
+                post.value.password = null;
+                post.value.disclosureType = "PUBLIC";
+            }
             const res = await write(`/api/board/${boardId}/post`, null, post.value);
             if (res) alert("게시글 작성이 완료되었습니다.");
             router.replace({name:"PostList", params:{boardId:boardId}});

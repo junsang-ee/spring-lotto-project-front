@@ -71,8 +71,18 @@
     </v-row>
 
 <v-row class="d-flex justify-end" align="center">
-
-  <v-col cols="1">
+  <v-col cols="auto">
+    <v-btn
+      color="primary"
+      text="동행복권 사이트 바로가기"
+      href="https://dhlottery.co.kr/"
+      target="_blank"
+    />
+  </v-col>
+  <v-col cols="auto">
+    <v-label>로또 번호 발급 이용가능 횟수 : {{ dailyAvailableCount }}</v-label>
+  </v-col>
+  <v-col cols="2">
     <v-select
       v-model="price"
       :items="priceOptions"
@@ -97,22 +107,32 @@
     />
   </v-col>
 </v-row>
-
     <v-row>
       <v-col cols="12">
         <v-data-table
+          v-model:items-per-page="pageSize"
           :headers="tableHeaders"
+          :items-length="totalCount"
           :items="randomLottoList"
+          :loading="isLoading"
           :search="search"
-          :page.sync="page"
-          :items-per-page="pageSize"
-          @click:row="goPostDetail"
-          hide-default-footer
-        >
+          item-key="id"
+          :page.sync="currentPage">
           <template v-slot:no-data>
             <v-alert :value="true" icon="mdi-alert">로또 번호를 랜덤으로 뽑아보세요!</v-alert>
           </template>
         </v-data-table>
+        <v-row class="text-center px-4 align-center" wrap>
+            <v-col class="text-truncate" cols="12" md="2">
+                Total {{ totalCount }} records
+            </v-col>
+            <v-col cols="12" md="6">
+                <v-pagination
+                    v-model="currentPage"
+                    :length="getPageCount"
+                />
+            </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <SelectLottoPop 
@@ -126,18 +146,10 @@
 
 
 <script setup>
-import { computed, ref} from "vue";
+import { computed, onMounted, ref} from "vue";
 import SelectLottoPop from "@/views/lottos/SelectLottoPop.vue"
 import {read} from "@/utils/util-axios.js";
-
-const tableHeaders = [
-    {title: "첫번째 로또 번호", key: "firstNumber", align: "center"},
-    {title: "두번째 로또 번호", key: "secondNumber", align: "center"},
-    {title: "세 번쨰 로또 번호", key: "thirdNumber", align: "center"},
-    {title: "네 번째 로또 번호", key: "fourthNumber", align: "center"},
-    {title: "다섯 번째 로또 번호", key: "fifthNumber", align: "center"},
-    {title: "여섯 번째 로또 번호", key: "sixthNumber", align: "center"}
-]
+import { useLottoStore } from "@/store/lotto";
 
 const exceptList = ref([]);
 const needsList = ref([]);
@@ -145,20 +157,29 @@ const isNeeds = ref(false);
 const isShowModal = ref(false);
 const randomLottoList = ref([]);
 const resetNumber = ref(0);
-
 const price = ref(null);
+const dailyAvailableCount = ref(0);
+const currentPage = ref(1);
+const $lotto = useLottoStore();
 const priceOptions = [
   "1,000원", "5,000원", "10,000원", "50,000원"
 ];
-
-const showCustomPrice = ref(false);
-
-const customPrice = ref("");
+const tableHeaders = [
+    {title: "첫번째 로또 번호", key: "firstNumber", align: "center"},
+    {title: "두번째 로또 번호", key: "secondNumber", align: "center"},
+    {title: "세 번쨰 로또 번호", key: "thirdNumber", align: "center"},
+    {title: "네 번째 로또 번호", key: "fourthNumber", align: "center"},
+    {title: "다섯 번째 로또 번호", key: "fifthNumber", align: "center"},
+    {title: "여섯 번째 로또 번호", key: "sixthNumber", align: "center"}
+];
 
 const resetRandomLottoList = () => {
   if (randomLottoList.value.length === 0) return;
-  if (confirm("발급받은 랜덤 로또 번호를 초기화하시겠습니까?"))
+  if (confirm("발급받은 랜덤 로또 번호를 초기화하시겠습니까?")) {
     randomLottoList.value = [];
+    $lotto.reset();
+  }
+    
 }
 
 const isEnableResetNeeds = () => needsList.value.length === 0;
@@ -179,14 +200,6 @@ const resetConditionalList = (number) => {
   }
 }
 
-const isCustomPrice = () => {
-  showCustomPrice.value = price.value && price.value.name === "직접입력";
-}
-
-const togglePrice = () => {
-  if (!showCustomPrice.value) showCustomPrice.value = true;
-}
-
 const closeModal = ({checkedExcepts, checkedNeeds}) => {
   exceptList.value = checkedExcepts;
   needsList.value = checkedNeeds;
@@ -196,10 +209,6 @@ const closeModal = ({checkedExcepts, checkedNeeds}) => {
 const openModal = (needs) => {
   isShowModal.value = true;
   isNeeds.value = needs;
-}
-
-const addExceptNumber = () => {
-  alert("add except number button");
 }
 
 const convertList = (list) => {
@@ -215,17 +224,7 @@ const getConvertedPrice = (val) => {
   return 5000;
 }
 
-
-const validLottoLength = () => {
-  if (needsList.value.length >= 6) {
-    console.log("포함할 로또 목록은 6개를 초과할 수 없습니다.");
-  }
-  if (exceptList.value.length >= 39) {
-    console.log("제외할 로또 목록은 39개를 초과할 수 없습니다.");
-  }
-}
-
-const getLottoList = async() => {
+const getLottoList = async () => {
   try {
     const response = await read("/api/lotto/random", {
       price: getConvertedPrice(price.value),
@@ -233,8 +232,19 @@ const getLottoList = async() => {
       needsList: convertList(needsList.value)
     })
     randomLottoList.value = response.data.data.lottoList;
+    $lotto.setLotto(randomLottoList.value);
+    getDailyAvailableCount();
   } catch (e) {
     alert(e.message)
+  }
+}
+
+const getDailyAvailableCount = async () => {
+  try {
+    const response = await read("/api/user/available-count");
+    dailyAvailableCount.value = response.data.data;
+  } catch(e) {
+    alert(e.message);
   }
 }
 
@@ -245,7 +255,11 @@ const sortedExceptList = computed(function() {
 const sortedNeedsList = computed(function() {
   return needsList.value.slice().sort((a, b) => a - b);
 })
-
+const init = () => {
+  getDailyAvailableCount();
+  if ($lotto.getLotto() != null) randomLottoList.value = $lotto.getLotto();
+}
+onMounted(init);
 </script>
 
 <style scoped>

@@ -13,9 +13,9 @@ const vueAxios = {
     async install(app) {
       const $auth = useTokenStore(); 
       const $loading = useLoadingStore();
+      
+      $axios.defaults.baseURL = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}`;
 
-      // $axios.defaults.baseURL = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}`;
-      $axios.defaults.baseURL = "http://localhost:8080"
       const vue = app.config.globalProperties;
 
       $axios.interceptors.request.use((config) => {

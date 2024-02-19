@@ -1,11 +1,9 @@
 <template>
-
-
-<v-dialog width="500" v-model="isShowModal" persistent :click-outside="false">
-  <template v-slot:activator="{ props }">
-    <v-btn variant="flat" v-bind="props" @click="open">회원가입</v-btn>
-  </template>
-  <v-card>
+  <v-dialog width="500" v-model="isShowModal" persistent :click-outside="false">
+    <template v-slot:activator="{ props }">
+      <v-btn variant="flat" v-bind="props" @click="open">회원가입</v-btn>
+    </template>
+    <v-card>
       <v-container>
         <v-row>
           <v-col>
@@ -77,8 +75,8 @@
         </v-card-text>
       </v-container>
     </v-card>
-</v-dialog>
-  </template>
+  </v-dialog>
+</template>
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
@@ -133,6 +131,8 @@ const doApi = () => {
       sendCode();
       break;
     case SignupState.SEND_CODE:
+    case SignupState.INVALID_CODE:
+    case SignupState.EXPIRED_CODE:
       verifyEmail();
       break;
     case SignupState.SUCCESS_VERIFY_EMAIL:
@@ -173,7 +173,7 @@ const sendCode = async () => {
 const verifyEmail = async () => {
   isLoading.value = true;
   try {
-    await sleep(2500);
+    await sleep(2000);
     const data = await write("/api/auth/email/verify", null, {
       email: signupInfo.value.email,
       authCode: (signupInfo.value.code).toString()

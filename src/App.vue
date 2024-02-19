@@ -105,8 +105,8 @@ router.beforeEach((to, from, next) => {
 
 const getBoards = async () => {
   try {
-    const result = await read("/api/board");
-    boards.value = result.data.data.boards;
+    const response = await read("/api/board");
+    boards.value = response.data.data.boards;
   } catch (e) {
     console.log(e.message);
   }
@@ -133,15 +133,9 @@ const logout = () => {
   }
 }
 
-const getIsLogOffed = () => {
-  return $auth.isNullable() && $userInfo.isNullable();
-}
+const getIsLogOffed = () => $auth.isNullable() && $userInfo.isNullable();
+const getIsAdmin = () => $userInfo.getInfo()?.role?.startsWith("ADMIN");
 
-const getIsAdmin = () => {
-  console.log("getIsAdmin :: " + $userInfo.getInfo()?.role?.startsWith("ADMIN"));
-  return $userInfo.getInfo()?.role?.startsWith("ADMIN");
-}
-  
 </script>
 
 <style scoped>
