@@ -10,57 +10,72 @@ Axios.defaults.headers.common.ContentType = "application/json";
 const $axios = Axios;
 
 const vueAxios = {
-    async install(app) {
-      const $auth = useTokenStore(); 
-      const $loading = useLoadingStore();
-      $axios.defaults.baseURL = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}`;
+  async install(app) {
+    const $auth = useTokenStore();
+    const $loading = useLoadingStore();
 
-      const vue = app.config.globalProperties;
+    $axios.defaults.baseURL =
+      import.meta.env.NODE_ENV == "prod"
+        ? `${import.meta.env.VITE_API_PROTOCOL}://${
+            import.meta.env.VITE_API_HOST
+          }`
+        : `${import.meta.env.VITE_API_PROTOCOL}://${
+            import.meta.env.VITE_API_HOST
+          }:${import.meta.env.VITE_API_PORT}`;
+          
+    const vue = app.config.globalProperties;
 
-      $axios.interceptors.request.use((config) => {
-          console.log(`Request : ${config.url}, ${JSON.stringify(config.params)}`);
-          if (config.method !== "get") {
-            $loading.setLoading(true);
-          }
-          let token = $auth.getToken();
-          if (token) {
-            config.headers.Authorization = `${token}`;
-          }
-          return config;
-        }, (error) => {
-          $loading.setLoading(false);
-          return Promise.reject(error);
-        });
+    $axios.interceptors.request.use(
+      (config) => {
+        console.log(
+          `Request : ${config.url}, ${JSON.stringify(config.params)}`
+        );
+        if (config.method !== "get") {
+          $loading.setLoading(true);
+        }
+        let token = $auth.getToken();
+        if (token) {
+          config.headers.Authorization = `${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        $loading.setLoading(false);
+        return Promise.reject(error);
+      }
+    );
 
-        $axios.interceptors.response.use((response) => {
-          $loading.setLoading(false);
-          let responseCode = response.data.code;
-          if (responseCode > 1) {
-            return Promise.reject(response.data);
+    $axios.interceptors.response.use(
+      (response) => {
+        $loading.setLoading(false);
+        let responseCode = response.data.code;
+        if (responseCode > 1) {
+          return Promise.reject(response.data);
+        }
+        return response;
+      },
+      (error) => {
+        $loading.setLoading(false);
+        if (error.response) {
+          switch (error.response.status) {
+            case 403:
+              alert("세션이 만료됐습니다.");
+              router.replace({ name: "Login" });
+              break;
+            case 500:
+              alert("데이터 처리 중 문제가 발생하였습니다.");
+              router.back();
+              break;
+            default:
+              break;
           }
-          return response;
-        }, (error) => {
-          $loading.setLoading(false);
-          if (error.response) {
-            switch (error.response.status) {
-              case 403:
-                alert("세션이 만료됐습니다.");
-                router.replace({name:"Login"});
-                break;
-              case 500:
-                alert("데이터 처리 중 문제가 발생하였습니다.");
-                router.back();
-                break;
-              default:
-                break;
-            }
-          }
-          return Promise.reject(error);
-        });
+        }
+        return Promise.reject(error);
+      }
+    );
 
-      vue.$axios = $axios;
-    }
+    vue.$axios = $axios;
+  },
 };
 
-export {$axios, vueAxios};
-
+export { $axios, vueAxios };
