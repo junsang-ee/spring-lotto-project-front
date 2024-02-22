@@ -14,15 +14,15 @@ const vueAxios = {
     const $auth = useTokenStore();
     const $loading = useLoadingStore();
 
-    $axios.defaults.baseURL =
-      import.meta.env.NODE_ENV == "prod"
-        ? `${import.meta.env.VITE_API_PROTOCOL}://${
-            import.meta.env.VITE_API_HOST
-          }`
-        : `${import.meta.env.VITE_API_PROTOCOL}://${
-            import.meta.env.VITE_API_HOST
-          }:${import.meta.env.VITE_API_PORT}`;
-          
+    // $axios.defaults.baseURL =
+    //   import.meta.env.NODE_ENV == "prod"
+    //     ? `${import.meta.env.VITE_API_PROTOCOL}://${
+    //         import.meta.env.VITE_API_HOST
+    //       }`
+    //     : `${import.meta.env.VITE_API_PROTOCOL}://${
+    //         import.meta.env.VITE_API_HOST
+    //       }:${import.meta.env.VITE_API_PORT}`;
+    $axios.defaults.baseURL = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}`
     const vue = app.config.globalProperties;
 
     $axios.interceptors.request.use(
