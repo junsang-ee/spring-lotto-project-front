@@ -73,18 +73,20 @@ import { useRouter} from "vue-router";
 import { useTokenStore } from "@/store/auth";
 import { useUserInfoStore } from "@/store/user";
 import {tokenValidator} from "@/utils/util-auth";
+import { useLottoStore } from "@/store/lotto";
 
 const router = useRouter();
 const boards = ref([]);
 const $auth = useTokenStore();
 const $userInfo = useUserInfoStore();
-
+const $lotto = useLottoStore();
 
 router.beforeEach((to, from, next) => {
   document.title = "JunsangLotto";
   if (to?.name?.startsWith("Login")) {
     $auth.reset()
     $userInfo.reset();
+    $lotto.reset();
     next();
   } else {
     try {

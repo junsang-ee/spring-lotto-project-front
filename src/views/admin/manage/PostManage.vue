@@ -88,11 +88,7 @@ const accessType = ref(null);
 const getBoards = async () => {
   try {
     const response = await read("/api/board");
-    const boardsData = response.data.data.boards;
-    boards.value = boardsData.map(board => ({
-      id: board.id,
-      name: board.name
-    }));
+    boards.value = response.data.data.boards;
   } catch(e) {
     alert(e.message);
   }

@@ -76,7 +76,6 @@ const doLogin = async () => {
       });
       const token = tokenValidator(result.data?.data?.jwt);
       $token.setToken(token);
-
       const myInfo = await read("/api/user/me");
       $userInfo.setInfo(myInfo.data.data);
       router.replace({name: "RandomLotto"});
