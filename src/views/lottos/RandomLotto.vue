@@ -161,6 +161,7 @@ const price = ref(null);
 const dailyAvailableCount = ref(0);
 const currentPage = ref(1);
 const $lotto = useLottoStore();
+const isLoading = ref(false);
 const priceOptions = [
   "1,000원", "5,000원", "10,000원", "50,000원"
 ];

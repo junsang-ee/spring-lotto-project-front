@@ -22,7 +22,10 @@ const vueAxios = {
     //     : `${import.meta.env.VITE_API_PROTOCOL}://${
     //         import.meta.env.VITE_API_HOST
     //       }:${import.meta.env.VITE_API_PORT}`;
-    $axios.defaults.baseURL = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}`
+    $axios.defaults.baseURL = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}`
+    if (import.meta.env.VITE_USER_NODE_ENV === "prod") {
+      $axios.defaults.baseURL = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}`
+    }
     const vue = app.config.globalProperties;
 
     $axios.interceptors.request.use(

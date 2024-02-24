@@ -20,7 +20,36 @@
         />
       </v-card-actions>
     </v-card>
-
+    <v-container fluid>
+      <v-row>
+        <v-col cols="12">
+          <v-data-table
+            v-model:items-per-page="pageSize"
+            :headers="tableHeaders"
+            :items-length="totalCount"
+            :items="randomLottoList"
+            :loading="isLoading"
+            :search="search"
+            item-key="id"
+            :page.sync="currentPage">
+            <template v-slot:no-data>
+              <v-alert :value="true" icon="mdi-alert">추출한 랜덤 로또 번호가 아직 없습니다.</v-alert>
+            </template>
+          </v-data-table>
+          <v-row class="text-center px-4 align-center" wrap>
+            <v-col class="text-truncate" cols="12" md="2">
+                Total {{ totalCount }} records
+            </v-col>
+            <v-col cols="12" md="6">
+                <v-pagination
+                    v-model="currentPage"
+                    :length="getPageCount"
+                />
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-container>
     <v-dialog v-model="isShowPasswordModal" persistent max-width="500px">
       <v-card>
         <v-card-title>비밀번호 수정</v-card-title>
@@ -94,10 +123,22 @@ const currentPassword = ref(null);
 const newPassword = ref(null);
 const reEnterPassword = ref(null);
 const isError = ref(false);
+const currentPage = ref(1);
+const isLoading = ref(false);
 
 const passwordRuleConfig = /^[^\s]{6,12}$/;
 
 const errorMessage = ref("");
+
+const tableHeaders = [
+    {title: "첫번째 로또 번호", key: "firstNumber", align: "center"},
+    {title: "두번째 로또 번호", key: "secondNumber", align: "center"},
+    {title: "세 번쨰 로또 번호", key: "thirdNumber", align: "center"},
+    {title: "네 번째 로또 번호", key: "fourthNumber", align: "center"},
+    {title: "다섯 번째 로또 번호", key: "fifthNumber", align: "center"},
+    {title: "여섯 번째 로또 번호", key: "sixthNumber", align: "center"},
+    {title: "당첨 결과", key: "winningResult", align: "center"}
+];
 
 const passwordRule = [
   v => passwordRuleConfig.test(v) || "비밀번호는 6~12 자리로 입력하여야 합니다.(공백 제외)"
