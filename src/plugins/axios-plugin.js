@@ -13,15 +13,6 @@ const vueAxios = {
   async install(app) {
     const $auth = useTokenStore();
     const $loading = useLoadingStore();
-
-    // $axios.defaults.baseURL =
-    //   import.meta.env.NODE_ENV == "prod"
-    //     ? `${import.meta.env.VITE_API_PROTOCOL}://${
-    //         import.meta.env.VITE_API_HOST
-    //       }`
-    //     : `${import.meta.env.VITE_API_PROTOCOL}://${
-    //         import.meta.env.VITE_API_HOST
-    //       }:${import.meta.env.VITE_API_PORT}`;
     $axios.defaults.baseURL = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}:${import.meta.env.VITE_API_PORT}`
     if (import.meta.env.VITE_USER_NODE_ENV === "prod") {
       $axios.defaults.baseURL = `${import.meta.env.VITE_API_PROTOCOL}://${import.meta.env.VITE_API_HOST}`
@@ -30,9 +21,6 @@ const vueAxios = {
 
     $axios.interceptors.request.use(
       (config) => {
-        console.log(
-          `Request : ${config.url}, ${JSON.stringify(config.params)}`
-        );
         if (config.method !== "get") {
           $loading.setLoading(true);
         }
@@ -62,7 +50,7 @@ const vueAxios = {
         if (error.response) {
           switch (error.response.status) {
             case 403:
-              alert("세션이 만료됐습니다.");
+              alert("세션이 만료되었습니다.");
               router.replace({ name: "Login" });
               break;
             case 500:
