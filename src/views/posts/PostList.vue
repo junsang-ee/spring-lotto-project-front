@@ -94,11 +94,6 @@ const currentPage = ref(1);
 const postPassword = ref(null);
 const $postTemp = usePostStore();
 
-const onPageChange = (page) => {
-    console.log("pageChange!");
-    currentPage.value = page;
-}
-
 const verifyPassword = ref({
     password: null
 }) 
@@ -108,7 +103,6 @@ const getPageCount = computed(() => {
 
 const getPosts = async () => {
     isLoading.value = true;
-    console.log("currentPage :: "+ currentPage.value);
     try {
         const res = await read(`/api/board/${boardId}/post`, {
             page: currentPage.value - 1,

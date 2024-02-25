@@ -115,7 +115,6 @@
           :items-length="totalCount"
           :items="randomLottoList"
           :loading="isLoading"
-          :search="search"
           item-key="id"
           :page.sync="currentPage">
           <template v-slot:no-data>
@@ -162,6 +161,8 @@ const dailyAvailableCount = ref(0);
 const currentPage = ref(1);
 const $lotto = useLottoStore();
 const isLoading = ref(false);
+const pageSize = ref(10);
+const totalCount = ref(0);
 const priceOptions = [
   "1,000원", "5,000원", "10,000원", "50,000원"
 ];
@@ -180,8 +181,11 @@ const resetRandomLottoList = () => {
     randomLottoList.value = [];
     $lotto.reset();
   }
-    
 }
+
+const getPageCount = computed(() => {
+    return Math.floor(((totalCount.value-1) / pageSize.value) + 1);
+});
 
 const isEnableResetNeeds = () => needsList.value.length === 0;
 
@@ -233,6 +237,7 @@ const getLottoList = async () => {
       needsList: convertList(needsList.value)
     })
     randomLottoList.value = response.data.data.lottoList;
+    totalCount.value = randomLottoList.value.length;
     $lotto.setLotto(randomLottoList.value);
     getDailyAvailableCount();
   } catch (e) {

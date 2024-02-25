@@ -27,7 +27,7 @@
             v-model:items-per-page="pageSize"
             :headers="tableHeaders"
             :items-length="totalCount"
-            :items="randomLottoList"
+            :items="lottoHistory"
             :loading="isLoading"
             :search="search"
             item-key="id"
@@ -106,7 +106,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { update } from "@/utils/util-axios.js";
 import { useRouter } from "vue-router";
 import { useUserInfoStore } from "@/store/user";
@@ -125,9 +125,11 @@ const reEnterPassword = ref(null);
 const isError = ref(false);
 const currentPage = ref(1);
 const isLoading = ref(false);
-
+const search = ref(null);
+const lottoHistory = ref([]);
 const passwordRuleConfig = /^[^\s]{6,12}$/;
-
+const pageSize = ref(10);
+const totalCount = ref(0);
 const errorMessage = ref("");
 
 const tableHeaders = [
@@ -139,6 +141,10 @@ const tableHeaders = [
     {title: "여섯 번째 로또 번호", key: "sixthNumber", align: "center"},
     {title: "당첨 결과", key: "winningResult", align: "center"}
 ];
+
+const getPageCount = computed(() => {
+    return Math.floor(((totalCount.value-1) / pageSize.value) + 1);
+});
 
 const passwordRule = [
   v => passwordRuleConfig.test(v) || "비밀번호는 6~12 자리로 입력하여야 합니다.(공백 제외)"

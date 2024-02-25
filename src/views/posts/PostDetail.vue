@@ -188,7 +188,7 @@ const updatePost = async() => {
       alert("게시글이 정상적으로 수정되었습니다.");
       closePasswordDialog();
       changeEditMode();
-      getDetail();
+      getPostDetail();
     } catch (e) {
       alert(e.message);
     }
