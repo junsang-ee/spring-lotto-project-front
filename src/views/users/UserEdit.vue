@@ -18,6 +18,13 @@
           @click="logout"
           text="로그아웃"         
         />
+
+        <v-btn
+          variant="tonal" 
+          color="primary"         
+          @click="doRetire"
+          text="회원 탈퇴하기"         
+        />
       </v-card-actions>
     </v-card>
     <v-container fluid>
@@ -178,13 +185,29 @@ const closePasswordModal = () => isShowPasswordModal.value = false;
 
 const logout = () => {
   if (confirm("로그아웃 하시겠습니까?")) {
-    $auth.reset();
-    $userInfo.reset();
-    $lotto.reset();
+    initialization();
     router.replace({name:"Login"});
   }
 }
 
+const doRetire = async() => {
+  if (confirm("정말 회원탈퇴를 하시겠습니까?")) {
+    try {
+      await update("/api/user/retired");
+      alert("정상적으로 회원 탈퇴되었습니다.");
+      router.replace({name: "Login"});
+      initialization();
+    } catch(e) {
+      alert(e.message);
+    }
+  }
+}
+
+const initialization = () => {
+  $auth.reset();
+  $userInfo.reset();
+  $lotto.reset();
+}
 
 watch(() => isShowPasswordModal.value, (val) => {
   if (!val) {

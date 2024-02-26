@@ -105,7 +105,6 @@ const createBoard = async () => {
   } catch(e) {
     alert(e.message);
   }
-  console.log("test create board");
 }
 
 

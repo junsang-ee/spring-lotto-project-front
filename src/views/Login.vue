@@ -72,7 +72,7 @@ const doLogin = async () => {
     if (valid) {
       const result = await write("/api/auth/login", null, {
         email: email.value,
-        password: password.value,
+        password: password.value
       });
       const token = tokenValidator(result.data?.data?.jwt);
       $token.setToken(token);
@@ -82,7 +82,6 @@ const doLogin = async () => {
     } else
       alert("이메일 또는 비밀번호를 확인하세요.");
   } catch (e) {
-    console.log(e);
     if (e.code === 101) alert("입력 정보를 확인해 주세요.");
     else alert(e.message);
   }
