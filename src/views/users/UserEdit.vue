@@ -30,19 +30,58 @@
     <v-container fluid>
       <v-row>
         <v-col cols="12">
-          <v-data-table
+          <v-data-table-server
             v-model:items-per-page="pageSize"
             :headers="tableHeaders"
             :items-length="totalCount"
-            :items="lottoHistory"
+            :items="lottoExtractions"
             :loading="isLoading"
             :search="search"
             item-key="id"
-            :page.sync="currentPage">
+            :page.sync="currentPage"
+            @update:options="getExtractions"
+            class="elevation-1"
+          >
             <template v-slot:no-data>
               <v-alert :value="true" icon="mdi-alert">추출한 랜덤 로또 번호가 아직 없습니다.</v-alert>
             </template>
-          </v-data-table>
+            <template v-slot:item="{ item }">
+              <tr class="align-middle pending-default">
+                <td v-if="getIsWin(item.firstStatus)" class="win-default">
+                  {{ item.firstNumber }}
+                </td>
+                <td v-else>{{ item.firstNumber }}</td>
+                <td v-if="getIsWin(item.secondStatus)" class="win-default">
+                  {{ item.secondNumber }}
+                </td>
+                <td v-else>{{ item.secondNumber }}</td>
+                <td v-if="getIsWin(item.thirdStatus)" class="win-default">
+                  {{ item.thirdNumber }}</td>
+                <td v-else>{{ item.thirdNumber }}</td>
+                <td v-if="getIsWin(item.fourthStatus)" class="win-default">
+                  {{ item.fourthNumber }}</td>
+                <td v-else>{{ item.fourthNumber }}</td>
+
+                <td v-if="getIsWin(item.fifthStatus)" class="win-default">
+                  {{ item.fifthNumber }}</td>
+                <td v-else>{{ item.fifthNumber }}</td>
+
+                <td v-if="getIsWin(item.sixthStatus)" class="win-default">
+                  {{ item.sixthNumber }}</td>
+                <td v-else>{{ item.sixthNumber }}</td>
+
+                <td style="color: black;">{{ convertDateOnlyDay(item.createdAt) }}</td>
+                
+                <td v-if="item.winningResult === 'WON'" class="win-default">
+                  {{ convertWinningResult(item.winningResult) }}
+                </td>
+                <td v-else-if="item.winningResult === 'LOST'" class="lost-default">
+                  {{ convertWinningResult(item.winningResult) }}
+                </td>
+                 <td v-else>{{ convertWinningResult(item.winningResult) }}</td>
+              </tr>
+            </template>
+          </v-data-table-server>
           <v-row class="text-center px-4 align-center" wrap>
             <v-col class="text-truncate" cols="12" md="2">
                 Total {{ totalCount }} records
@@ -113,12 +152,13 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from "vue";
-import { update } from "@/utils/util-axios.js";
+import { ref, watch, computed, onMounted } from "vue";
+import { read, update } from "@/utils/util-axios.js";
 import { useRouter } from "vue-router";
 import { useUserInfoStore } from "@/store/user";
 import { useTokenStore } from "@/store/auth";
 import { useLottoStore } from "@/store/lotto";
+import { convertDateOnlyDay } from "@/utils/util-dateConverter";
 
 const router = useRouter();
 const $userInfo = useUserInfoStore();
@@ -133,7 +173,7 @@ const isError = ref(false);
 const currentPage = ref(1);
 const isLoading = ref(false);
 const search = ref(null);
-const lottoHistory = ref([]);
+const lottoExtractions = ref([]);
 const passwordRuleConfig = /^[^\s]{6,12}$/;
 const pageSize = ref(10);
 const totalCount = ref(0);
@@ -142,10 +182,11 @@ const errorMessage = ref("");
 const tableHeaders = [
     {title: "첫번째 로또 번호", key: "firstNumber", align: "center"},
     {title: "두번째 로또 번호", key: "secondNumber", align: "center"},
-    {title: "세 번쨰 로또 번호", key: "thirdNumber", align: "center"},
+    {title: "세 번째 로또 번호", key: "thirdNumber", align: "center"},
     {title: "네 번째 로또 번호", key: "fourthNumber", align: "center"},
     {title: "다섯 번째 로또 번호", key: "fifthNumber", align: "center"},
     {title: "여섯 번째 로또 번호", key: "sixthNumber", align: "center"},
+    {title: "발급 날짜", key: "createdAt", align: "center"},
     {title: "당첨 결과", key: "winningResult", align: "center"}
 ];
 
@@ -156,6 +197,12 @@ const getPageCount = computed(() => {
 const passwordRule = [
   v => passwordRuleConfig.test(v) || "비밀번호는 6~12 자리로 입력하여야 합니다.(공백 제외)"
 ]
+
+const convertWinningResult = (status) => {
+    if (status === "PENDING") return "미추첨";
+    else if (status === "LOST") return "낙첨";
+    else return "당첨";
+}
 
 const modifyPasswordEnabled = () => 
   newPassword.value !== reEnterPassword.value;
@@ -195,13 +242,31 @@ const doRetire = async() => {
     try {
       await update("/api/user/retired");
       alert("정상적으로 회원 탈퇴되었습니다.");
-      router.replace({name: "Login"});
       initialization();
+      router.replace({name: "Login"});
     } catch(e) {
       alert(e.message);
     }
   }
+};
+
+const getExtractions = async() => {
+  isLoading.value = true;
+  try {
+    const response = await read("/api/lotto/extraction/list", {
+      page: currentPage.value - 1,
+      size: pageSize.value
+    });
+    lottoExtractions.value = response.data.data.list;
+    totalCount.value = response.data.data.totalCount;
+    isLoading.value = false;
+  } catch(e) {
+    isLoading.value = false;
+    alert(e.message);
+  }
 }
+
+const getIsWin = (status) => status === "WON";
 
 const initialization = () => {
   $auth.reset();
@@ -217,9 +282,31 @@ watch(() => isShowPasswordModal.value, (val) => {
     reEnterPassword.value = null;
     newPassword.value = null;
   }
-})
+});
+
+onMounted(getExtractions);
 </script>
 
 <style scoped>
+.center-table {
+  display: flex;
+  justify-content: center;
+}
 
+.align-middle {
+  vertical-align: middle !important;
+  text-align: center !important;
+}
+
+.win-default {
+  color: #4169E1;
+}
+
+.lost-default {
+  color: #FF6961;
+}
+
+.pending-default {
+  color: grey;
+}
 </style>

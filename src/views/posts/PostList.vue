@@ -26,7 +26,11 @@
                 :page.sync="currentPage"
                 @click:row="validatePostPrivacy"
                 @update:options="getPosts"
-            />
+            >
+                <template v-slot:item.createdAt="{ item }">
+                    {{ convertDateOnlyDay(item.createdAt) }}
+                </template>
+            </v-data-table-server>
             <v-row class="text-center px-4 align-center" wrap>
                 <v-col class="text-truncate" cols="12" md="2">
                     Total {{ totalCount }} records
@@ -70,7 +74,7 @@ import { onMounted, ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { read, write } from "@/utils/util-axios.js";
 import { usePostStore } from "@/store/post";
-
+import {convertDate, convertDateOnlyDay} from "@/utils/util-dateConverter";
 
 const tableHeaders = [
     {title: "제목", key: "title", align: "center"},
@@ -96,7 +100,8 @@ const $postTemp = usePostStore();
 
 const verifyPassword = ref({
     password: null
-}) 
+});
+
 const getPageCount = computed(() => {
     return Math.floor(((totalCount.value-1) / pageSize.value) + 1);
 });
@@ -115,7 +120,7 @@ const getPosts = async () => {
         
     } catch(e) {
         isLoading.value = false;
-        console.log(e.message);
+        alert(e.message);
     }
 }
 

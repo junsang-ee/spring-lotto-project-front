@@ -82,7 +82,6 @@ const selectedBoard = ref(null);
 const isShow = ref(false);
 const boardName = ref(null);
 const boardType = ref(null);
-const visibility = ref(null);
 const accessType = ref(null);
 
 const getBoards = async () => {
@@ -106,8 +105,6 @@ const createBoard = async () => {
     alert(e.message);
   }
 }
-
-
 
 const openCreateBoardDialog = () => isShow.value = true;
 const closeCreateBoardDialog = () => {

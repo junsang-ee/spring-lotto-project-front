@@ -169,7 +169,7 @@ const priceOptions = [
 const tableHeaders = [
     {title: "첫번째 로또 번호", key: "firstNumber", align: "center"},
     {title: "두번째 로또 번호", key: "secondNumber", align: "center"},
-    {title: "세 번쨰 로또 번호", key: "thirdNumber", align: "center"},
+    {title: "세 번째 로또 번호", key: "thirdNumber", align: "center"},
     {title: "네 번째 로또 번호", key: "fourthNumber", align: "center"},
     {title: "다섯 번째 로또 번호", key: "fifthNumber", align: "center"},
     {title: "여섯 번째 로또 번호", key: "sixthNumber", align: "center"}
