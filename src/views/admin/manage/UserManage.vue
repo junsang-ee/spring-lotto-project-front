@@ -58,6 +58,9 @@
                   text="활성화"
                 />
               </template>
+              <template v-slot:item.createdAt="{ item }">
+                {{ convertDateOnlyDay(item.createdAt) }}
+              </template>
             </v-data-table-server>
             <v-row class="text-center px-4 align-center" wrap>
               <v-col>
@@ -77,6 +80,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { read, update } from "@/utils/util-axios.js";
+import { convertDateOnlyDay } from "@/utils/util-dateConverter";
 
 const userList = ref([]);
 const isLoading = ref(false);
@@ -89,6 +93,7 @@ const tableHeaders = [
     { title: '상태', align: 'center', value: 'status' },
     { title: '로또 발급 가능 횟수', align: 'center', value: 'dailyAvailableCount' },
     { title: '게시글 개수', align: 'center', value: 'postCount' },
+    { title: '가입 날짜', align: 'center', value: 'createdAt' },
     { title: '상태값 변경', align: 'center', value: "userDisabled" },
     { title: '상태값 변경', align: 'center', value: 'userRetired' },
     { title: '상태값 변경', align: 'center', value: "userEnabled" }
