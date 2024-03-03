@@ -30,6 +30,9 @@
                 <template v-slot:item.createdAt="{ item }">
                     {{ convertDateOnlyDay(item.createdAt) }}
                 </template>
+                <template v-slot:item.disclosureType="{ item }">
+                    {{ convertStatus(item.disclosureType) }}
+                </template>
             </v-data-table-server>
             <v-row class="text-center px-4 align-center" wrap>
                 <v-col class="text-truncate" cols="12" md="2">
@@ -108,10 +111,12 @@ const getPageCount = computed(() => {
     return Math.floor(((totalCount.value-1) / pageSize.value) + 1);
 });
 
+const convertStatus = (status) => status === "PRIVATE" ? "비공개" : "공개";
+
 const getPosts = async () => {
     isLoading.value = true;
     try {
-        const response = await read(`/api/board/${boardId}/post`, {
+        const response = await read(`/api/board/${boardId}/posts`, {
             page: currentPage.value - 1,
             size: pageSize.value
         });
@@ -131,12 +136,11 @@ const goWritePost = () => {
         query:{boardName:boardName}
     });
 }
+
 const validatePostPrivacy = (event, { item } ) => {
     $postTemp.setId(item.id);
-    if (item.disclosureType === "비공개") {
-        if ($userInfo.getInfo().role === "ADMIN")
-            goPostDetail();
-        else openPasswordDialog();
+    if (item.disclosureType === "PRIVATE") {
+        openPasswordDialog(); 
     } else {
         goPostDetail();
     }
@@ -157,8 +161,7 @@ const goPostDetail = () => {
     router.push({name: "PostDetail", 
                 params: {postId: $postTemp.getId()},
                 query:{boardName: boardName, 
-                       boardId: boardId,
-                       isAdmin: $userInfo.getInfo().role === "ADMIN"}});
+                       boardId: boardId}});
 };
 const openPasswordDialog = () => {
     isShowPasswordDialog.value = true;

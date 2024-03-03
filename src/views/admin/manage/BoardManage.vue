@@ -22,9 +22,12 @@
           :page.sync="currentPage"
           item-key="id"
           @update:options="getBoards"
-          @click:row="goPostList"
+          @click:row="goPostManage"
           class="elevation-1"
         >
+        <template v-slot:item.status="{ item }">
+          {{ convertStatus(item.status) }}
+        </template>
         <template v-slot:item.boardRemoved="{ item }">
           <v-btn 
             :disabled="item.status === 'REMOVED'" 
@@ -33,6 +36,8 @@
             text="삭제"
           />
         </template>
+
+        
         <template v-slot:item.boardEnabled="{ item }">
           <v-btn 
             :disabled="item.status === 'NORMAL'" 
@@ -98,15 +103,17 @@ const totalCount = ref(0);
 const pageSize = ref(10);
 
 const tableHeaders = [
-    { title: '게시판 명', align: 'center', value: 'name' },
-    { title: '활성화된 게시글 개수', align: 'center', value: 'enabledPostCount' },
-    { title: '비활성화된 게시글 개수', align: 'center', value: 'disabledPostCount' },
-    { title: '삭제된 게시글 개수', align: 'center', value: 'removedPostCount' },
+    { title: '게시판이름', align: 'center', value: 'name' },
+    { title: '활성화 게시글', align: 'center', value: 'enabledPostCount' },
+    { title: '비활성화 게시글', align: 'center', value: 'disabledPostCount' },
+    { title: '삭제 게시글', align: 'center', value: 'removedPostCount' },
     { title: '상태', align: 'center', value: 'status' },
     { title: '접근 유형', align: 'center', value: 'accessType' },
     { title: '상태값 변경', align: 'center', value: "boardRemoved" },
     { title: '상태값 변경', align: 'center', value: "boardEnabled" }
 ]
+
+const convertStatus = (status) => status === "NORMAL" ? "정상 활성화" : "삭제";
 
 const getBoards = async () => {
   isLoading.value = true;
@@ -158,12 +165,8 @@ const updateBoardStatus = async(boardId, status) => {
 }
 
 const goPostManage = (event, { item } ) => {
-  
-}
-
-const goPostList = (event, { item } ) => {
-    const boardId = item.id;
-    router.push({name: "PostList", params: {boardId: boardId}});
+  const boardId = item.id;
+  router.push({name: "PostManage", params: {boardId: boardId}});
 }
 
 const openCreateBoardDialog = () => isShow.value = true;

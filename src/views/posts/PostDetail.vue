@@ -119,7 +119,7 @@ const clearReply = () => {
 }
 
 const loadMoreComments = () => {
-  console.log('test');
+  console.log('loadMoreComments');
 }
 
 const registerReply = async() => {
@@ -201,7 +201,7 @@ const deletePost = async () => {
       if (response.data.data) {
         closePasswordDialog();
         alert("게시글이 정상적으로 삭제되었습니다.");
-        router.replace({name:"PostList", params:{boardId: boardId}});
+        goPostList();
       }
     } catch(e) {
       alert(e.message);
@@ -210,7 +210,12 @@ const deletePost = async () => {
 };
 
 const goPostList = () => {
-  router.replace({name:"PostList", params:{boardId: boardId}})
+  if (isAdmin) {
+    router.replace({name: "PostManage", params: {boardId: boardId}});
+  } else {
+    router.replace({name:"PostList", params:{boardId: boardId}});
+  }
+    
 };
 
 const validPassword = async () => {
