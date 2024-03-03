@@ -22,8 +22,8 @@
         <span @click="goComponent('RandomLotto')">랜덤 로또</span>
       </v-tab>
       <div v-if="getIsAdmin()">
-        <v-tab value="post-manage">
-          <span @click="goComponent('PostManage')">게시물 관리</span>
+        <v-tab value="board-manage">
+          <span @click="goComponent('BoardManage')">게시판 관리</span>
         </v-tab>
         <v-tab value="user-manage">
           <span @click="goComponent('UserManage')">유저 관리</span>
@@ -45,8 +45,8 @@
           랜덤 로또
         </v-window-item>
         <div v-if="getIsAdmin()">
-          <v-window-item value="post-manage">
-            게시글 관리
+          <v-window-item value="board-manage">
+            게시판 관리
           </v-window-item>
           <v-window-item value="user-manage">
             유저 관리

@@ -74,7 +74,8 @@ import { onMounted, ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { read, write } from "@/utils/util-axios.js";
 import { usePostStore } from "@/store/post";
-import {convertDate, convertDateOnlyDay} from "@/utils/util-dateConverter";
+import { convertDate, convertDateOnlyDay } from "@/utils/util-dateConverter";
+import { useUserInfoStore } from "@/store/user";
 
 const tableHeaders = [
     {title: "제목", key: "title", align: "center"},
@@ -97,6 +98,7 @@ const isShowPasswordDialog = ref(false);
 const currentPage = ref(1);
 const postPassword = ref(null);
 const $postTemp = usePostStore();
+const $userInfo = useUserInfoStore();
 
 const verifyPassword = ref({
     password: null
@@ -109,15 +111,13 @@ const getPageCount = computed(() => {
 const getPosts = async () => {
     isLoading.value = true;
     try {
-        const res = await read(`/api/board/${boardId}/post`, {
+        const response = await read(`/api/board/${boardId}/post`, {
             page: currentPage.value - 1,
             size: pageSize.value
         });
         isLoading.value = false;
-        let result = res.data.data;
-        posts.value = result.list;
-        totalCount.value = result.totalCount;
-        
+        posts.value = response.data.data.list;
+        totalCount.value = response.data.data.totalCount;
     } catch(e) {
         isLoading.value = false;
         alert(e.message);
@@ -134,7 +134,9 @@ const goWritePost = () => {
 const validatePostPrivacy = (event, { item } ) => {
     $postTemp.setId(item.id);
     if (item.disclosureType === "비공개") {
-        openPasswordDialog();
+        if ($userInfo.getInfo().role === "ADMIN")
+            goPostDetail();
+        else openPasswordDialog();
     } else {
         goPostDetail();
     }
@@ -155,7 +157,8 @@ const goPostDetail = () => {
     router.push({name: "PostDetail", 
                 params: {postId: $postTemp.getId()},
                 query:{boardName: boardName, 
-                       boardId: boardId}});
+                       boardId: boardId,
+                       isAdmin: $userInfo.getInfo().role === "ADMIN"}});
 };
 const openPasswordDialog = () => {
     isShowPasswordDialog.value = true;

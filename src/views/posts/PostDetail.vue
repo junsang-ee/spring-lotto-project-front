@@ -10,26 +10,26 @@
       <v-textarea v-else v-model="post.content" label="내용"/>
       <v-divider class="my-4"></v-divider>
       <v-card-actions>
-        <v-btn 
-          v-if="post.mine && !isEditing" 
+        <v-btn
+          v-if="(post.mine || isAdmin) && !isEditing" 
           color="primary" 
           @click="changeEditMode()"
           text="수정"
         />
         <v-btn 
-          v-if="post.mine && isEditing" 
+          v-if="(post.mine || isAdmin) && isEditing" 
           color="primary" 
           @click="validPost('update')"
           text="수정완료"
         />
         <v-btn 
-          v-if="post.mine && !isEditing" 
+          v-if="(post.mine || isAdmin) && !isEditing" 
           color="error" 
           @click="validPost('delete')"
           text="삭제"
         />
         <v-btn 
-          v-if="post.mine && isEditing" 
+          v-if="(post.mine || isAdmin) && isEditing" 
           color="error" 
           @click="cancelUpdate()"
           text="취소"
@@ -63,7 +63,7 @@
           v-model="newReplyContent"
           label="댓글을 입력하세요..."
           :disabled="!commentInputActive"
-        ></v-text-field>
+        />
       </v-card-text>
       <v-card-actions class="text-right ma-0">
         <div v-if="showReplyButton">
@@ -93,9 +93,8 @@ import { read, write, update, remove } from "@/utils/util-axios";
 const route = useRoute();
 const router = useRouter();
 const postId = route.params.postId;
-const boardName = route.query.boardName;
 const boardId = route.query.boardId;
-
+const isAdmin = route.query.isAdmin;
 const isLoading = ref(false);
 const isShowPasswordDialog = ref(false);
 const password = ref(null);
@@ -202,7 +201,7 @@ const deletePost = async () => {
       if (response.data.data) {
         closePasswordDialog();
         alert("게시글이 정상적으로 삭제되었습니다.");
-        router.replace({name:"PostList", params:{boardId: boardId}})
+        router.replace({name:"PostList", params:{boardId: boardId}});
       }
     } catch(e) {
       alert(e.message);

@@ -94,7 +94,7 @@ const tableHeaders = [
     { title: '로또 발급 가능 횟수', align: 'center', value: 'dailyAvailableCount' },
     { title: '게시글 개수', align: 'center', value: 'postCount' },
     { title: '가입 날짜', align: 'center', value: 'createdAt' },
-    { title: '상태값 변경', align: 'center', value: "userDisabled" },
+    { title: '상태값 변경', align: 'center', value: 'userDisabled' },
     { title: '상태값 변경', align: 'center', value: 'userRetired' },
     { title: '상태값 변경', align: 'center', value: "userEnabled" }
 ]
@@ -102,7 +102,7 @@ const tableHeaders = [
 const getUserList = async() => {
   isLoading.value = true;
   try {
-    const response = await read("/api/admin/user/list", {
+    const response = await read("/api/admin/users", {
       page: currentPage.value - 1,
       size: pageSize.value
     });
