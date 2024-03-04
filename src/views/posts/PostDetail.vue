@@ -1,5 +1,8 @@
 <template>
   <v-container>
+    <v-card-title class="board-title">
+        <span>{{ boardName }}</span>
+    </v-card-title>
     <v-card class="pa-4" v-if="post">
 
       <v-card-title v-if="!isEditing">{{ post.title }}</v-card-title>
@@ -94,6 +97,7 @@ const route = useRoute();
 const router = useRouter();
 const postId = route.params.postId;
 const boardId = route.query.boardId;
+const boardName = route.query.boardName;
 const isAdmin = route.query.isAdmin;
 const isLoading = ref(false);
 const isShowPasswordDialog = ref(false);
@@ -211,11 +215,18 @@ const deletePost = async () => {
 
 const goPostList = () => {
   if (isAdmin) {
-    router.replace({name: "PostManage", params: {boardId: boardId}});
+    router.replace({
+      name: "PostManage", 
+      params: {boardId: boardId}
+    });
   } else {
-    router.replace({name:"PostList", params:{boardId: boardId}});
+    router.replace({
+        name:"PostList", 
+        params: {boardId: boardId},
+        query: {boardName: boardName}
+    });
   }
-    
+
 };
 
 const validPassword = async () => {

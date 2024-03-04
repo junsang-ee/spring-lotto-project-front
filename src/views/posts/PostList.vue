@@ -2,7 +2,7 @@
     <v-container>
         <v-card flat>
             <v-card-title align="center" style="font-size: 30px; margin-bottom: 20px">
-                {{boardName}}
+                {{ boardName }}
             </v-card-title>
             <v-card-title>
                 <v-text-field
@@ -77,8 +77,7 @@ import { onMounted, ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { read, write } from "@/utils/util-axios.js";
 import { usePostStore } from "@/store/post";
-import { convertDate, convertDateOnlyDay } from "@/utils/util-dateConverter";
-import { useUserInfoStore } from "@/store/user";
+import { convertDateOnlyDay } from "@/utils/util-dateConverter";
 
 const tableHeaders = [
     {title: "제목", key: "title", align: "center"},
@@ -101,7 +100,6 @@ const isShowPasswordDialog = ref(false);
 const currentPage = ref(1);
 const postPassword = ref(null);
 const $postTemp = usePostStore();
-const $userInfo = useUserInfoStore();
 
 const verifyPassword = ref({
     password: null

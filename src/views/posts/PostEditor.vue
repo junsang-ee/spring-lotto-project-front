@@ -113,7 +113,11 @@ const registerPost = async () => {
 }
 
 const goPostList = () => {
-    router.replace({name:"PostList", params:{boardId: boardId}});
+    router.replace({
+        name:"PostList", 
+        params:{boardId: boardId},
+        query: {boardName: boardName}
+    });
 }
 
 </script>
