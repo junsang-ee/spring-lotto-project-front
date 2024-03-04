@@ -231,7 +231,7 @@ const getConvertedPrice = (val) => {
 
 const getLottoList = async () => {
   try {
-    const response = await read("/api/lotto/random", {
+    const response = await read("/api/lotto/randoms", {
       price: getConvertedPrice(price.value),
       exceptList: convertList(exceptList.value),
       needsList: convertList(needsList.value)

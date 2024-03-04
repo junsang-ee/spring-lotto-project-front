@@ -38,6 +38,15 @@
             text="삭제"
           />
         </template>
+        <template v-slot:item.boardPermanentRemove="{ item }">
+          <v-btn 
+            color="red"
+            @click="deleteBoard(item.id)"
+            text="영구 삭제"
+          />
+        </template>
+
+        
 
         
         <template v-slot:item.boardEnabled="{ item }">
@@ -91,7 +100,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { read, write, update } from "@/utils/util-axios.js";
+import { read, write, update, remove } from "@/utils/util-axios.js";
 import { useRouter} from "vue-router";
 
 const router = useRouter();
@@ -111,7 +120,8 @@ const tableHeaders = [
     { title: '상태', align: 'center', value: 'status' },
     { title: '접근 유형', align: 'center', value: 'accessType' },
     { title: '상태값 변경', align: 'center', value: "boardRemoved" },
-    { title: '상태값 변경', align: 'center', value: "boardEnabled" }
+    { title: '상태값 변경', align: 'center', value: "boardEnabled" },
+    { title: '영구 제거', align: 'center', value: "boardPermanentRemove" }
 ]
 
 const convertStatus = (status) => status === "NORMAL" ? "정상 활성화" : "삭제";
@@ -154,15 +164,26 @@ const updateBoardStatus = async(boardId, status) => {
   const statusValue = status === "NORMAL" ? "활성화" : "삭제";
   if (confirm("게시판을 정말 " + statusValue + " 하시겠습니까?")) {
     try {
-      await update(`/api/admin/board/${boardId}/status`, null, {
-        status: status
-      });
+      await update(`/api/admin/board/${boardId}/status/${status}`);
       alert("게시판 상태가 정상적으로 변경되었습니다.");
       getBoards();
     } catch(e) {
       alert(e.message);
     }
   }
+}
+
+const deleteBoard = async(boardId) => {
+  if (confirm("해당 게시판을 정말 영구적으로 삭제하시겠습니까?")) {
+    try {
+      const response = await remove(`/api/admin/board/${boardId}`);
+      alert(response.data.data.name + " 게시판이 정상적으로 영구 삭제되었습니다.");
+      getBoards();
+    } catch(e) {
+      alert(e.message);
+    }
+  }
+
 }
 
 const goPostManage = (boardId, boardName) => {

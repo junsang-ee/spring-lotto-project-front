@@ -253,7 +253,7 @@ const doRetire = async() => {
 const getExtractions = async() => {
   isLoading.value = true;
   try {
-    const response = await read("/api/lotto/extraction/list", {
+    const response = await read("/api/lotto/extractions", {
       page: currentPage.value - 1,
       size: pageSize.value
     });
