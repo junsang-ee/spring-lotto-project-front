@@ -34,11 +34,22 @@
             />
         </v-col>
     </v-form>
-    <v-btn 
-        @click="registerPost" 
-        color="primary">
-            게시글 등록
-        </v-btn>
+    <v-row>
+        <v-col cols="auto">
+            <v-btn 
+                @click="registerPost" 
+                color="primary"
+                text="게시글 등록"
+            />
+        </v-col>
+        <v-col cols="auto">
+            <v-btn 
+                @click="goPostList" 
+                color="primary"
+                text="목록으로"
+            />
+        </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -100,6 +111,11 @@ const registerPost = async () => {
         alert(e.message);
     }
 }
+
+const goPostList = () => {
+    router.replace({name:"PostList", params:{boardId: boardId}});
+}
+
 </script>
 
 <style scope>
