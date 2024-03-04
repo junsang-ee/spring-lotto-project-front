@@ -121,11 +121,9 @@ const getPageCount = computed(() => {
 
 const updateStatus = async(userId, status) => {
   try {
-    await update(`/api/admin/user/${userId}/status`, null, {
-      status: status
-    });
-    getUserList();
+    await update(`/api/admin/user/${userId}/status/${status}`);
     alert("상태 값이 성공적으로 변경되었습니다.");
+    getUserList();
   } catch(e) {
     alert(e.message);
   }
