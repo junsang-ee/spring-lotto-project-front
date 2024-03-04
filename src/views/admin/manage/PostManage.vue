@@ -160,9 +160,7 @@ const goPostDetail = (postId) => {
 
 const updatePostStatus = async (postId, status) => {
     try {
-        await update(`/api/admin/post/${postId}/status`, null, {
-            status: status
-        });
+        await update(`/api/admin/post/${postId}/status/${status}`);
         alert("게시글의 상태가 정상적으로 변경되었습니다.");
         getPosts();
     } catch(e) {
@@ -173,8 +171,8 @@ const updatePostStatus = async (postId, status) => {
 const deletePost = async(postId) => {
     if (confirm("해당 게시글을 영구적으로 삭제하시겠습니까?")) {
         try {
-            await remove(`/api/admin/post/${postId}`);
-            alert("해당 게시글이 영구적으로 삭제되었습니다.");
+            const response = await remove(`/api/admin/post/${postId}`);
+            alert(response.data.data.title + " 게시글이 정상적으로 영구 삭제되었습니다.");
             getPosts();
         } catch(e) {
             alert(e.message);
