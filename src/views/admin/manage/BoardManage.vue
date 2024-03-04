@@ -22,9 +22,11 @@
           :page.sync="currentPage"
           item-key="id"
           @update:options="getBoards"
-          @click:row="goPostManage"
           class="elevation-1"
         >
+        <template v-slot:item.name="{ item }">
+          <button @click="goPostManage(item.id, item.name)">{{ item.name }}</button>
+        </template>
         <template v-slot:item.status="{ item }">
           {{ convertStatus(item.status) }}
         </template>
@@ -104,9 +106,8 @@ const pageSize = ref(10);
 
 const tableHeaders = [
     { title: '게시판이름', align: 'center', value: 'name' },
-    { title: '활성화 게시글', align: 'center', value: 'enabledPostCount' },
+    { title: '정상활성화 게시글', align: 'center', value: 'enabledPostCount' },
     { title: '비활성화 게시글', align: 'center', value: 'disabledPostCount' },
-    { title: '삭제 게시글', align: 'center', value: 'removedPostCount' },
     { title: '상태', align: 'center', value: 'status' },
     { title: '접근 유형', align: 'center', value: 'accessType' },
     { title: '상태값 변경', align: 'center', value: "boardRemoved" },
@@ -164,9 +165,12 @@ const updateBoardStatus = async(boardId, status) => {
   }
 }
 
-const goPostManage = (event, { item } ) => {
-  const boardId = item.id;
-  router.push({name: "PostManage", params: {boardId: boardId}});
+const goPostManage = (boardId, boardName) => {
+  router.push({
+    name: "PostManage", 
+    params: {boardId: boardId}, 
+    query: {boardName: boardName}}
+  );
 }
 
 const openCreateBoardDialog = () => isShow.value = true;

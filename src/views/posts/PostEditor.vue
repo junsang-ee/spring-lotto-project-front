@@ -46,6 +46,7 @@
 import { ref } from "vue"
 import { useRoute, useRouter } from "vue-router";
 import { write } from "@/utils/util-axios";
+import { useUserInfoStore } from "@/store/user";
 
 const route = useRoute();
 const router = useRouter();
@@ -55,6 +56,7 @@ const isPrivate = ref(false);
 const isValid = ref(false);
 const textRuleConfig = /^\S.*\S$/;
 const passwordRuleConfig = /^\d{4}$/;
+const $userInfo = useUserInfoStore();
 
 const titleRule = [
     v => textRuleConfig.test(v) || "제목을 입력해주세요. (첫 글자 공백 제한, 두 글자 이상)"
@@ -83,7 +85,16 @@ const registerPost = async () => {
             }
             const res = await write(`/api/board/${boardId}/post`, null, post.value);
             if (res) alert("게시글 작성이 완료되었습니다.");
-            router.replace({name:"PostList", params:{boardId:boardId}});
+            if ($userInfo.getInfo().role === "ADMIN") {
+                router.replace({
+                    name: "PostManage", 
+                    params: {boardId: boardId}, 
+                    query: {boardName: boardName}
+                })
+            } else {
+                router.replace({name:"PostList", params:{boardId:boardId}});
+            }
+            
         }
     } catch(e) {
         alert(e.message);

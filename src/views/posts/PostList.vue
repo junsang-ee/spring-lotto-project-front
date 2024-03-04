@@ -13,7 +13,7 @@
                 />
             </v-card-title>
             <v-col justify="end" align="end">
-                <v-btn variant="tonal" @click="goWritePost">게시글 작성하기</v-btn>
+                <v-btn variant="tonal" @click="createPost">게시글 작성하기</v-btn>
             </v-col>
             <v-data-table-server
                 v-model:items-per-page="pageSize"
@@ -129,7 +129,7 @@ const getPosts = async () => {
     }
 }
 
-const goWritePost = () => {
+const createPost = () => {
     router.push({
         name: "PostEditor", 
         params:{boardId:boardId.value},
