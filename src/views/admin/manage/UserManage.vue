@@ -34,6 +34,11 @@
                   정상이용 중
                 </span>
               </template>
+              <template v-slot:item.email="{ item }">
+                <button @click="goUserDetail(item.id)">
+                  {{ item.email }}
+                </button>
+              </template>
               <template v-slot:item.userDisabled="{ item }">
                 <v-btn 
                   :disabled="item.status === 'DISABLED'" 
@@ -81,7 +86,9 @@
 import { ref, onMounted, computed } from 'vue';
 import { read, update } from "@/utils/util-axios.js";
 import { convertDateOnlyDay } from "@/utils/util-dateConverter";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const userList = ref([]);
 const isLoading = ref(false);
 const currentPage = ref(1);
@@ -89,14 +96,14 @@ const totalCount = ref(0);
 const pageSize = ref(10);
 
 const tableHeaders = [
-    { title: '이메일', align: 'center', value: 'email' },
-    { title: '상태', align: 'center', value: 'status' },
-    { title: '로또 발급 가능 횟수', align: 'center', value: 'dailyAvailableCount' },
-    { title: '게시글 개수', align: 'center', value: 'postCount' },
-    { title: '가입 날짜', align: 'center', value: 'createdAt' },
-    { title: '상태값 변경', align: 'center', value: 'userDisabled' },
-    { title: '상태값 변경', align: 'center', value: 'userRetired' },
-    { title: '상태값 변경', align: 'center', value: "userEnabled" }
+    { title:"이메일", key:"email", align:"center"},
+    { title:"상태", key:"status", align:"center"},
+    { title:"로또 발급 가능 횟수", key:"dailyAvailableCount", align:"center"},
+    { title:"게시글 개수", key:"postCount", align:"center"},
+    { title:"가입 날짜", key:"createdAt", align:"center"},
+    { title:"상태값 변경", value:"userDisabled", align:"center"},
+    { title:"상태값 변경", value:"userRetired", align:"center"},
+    { title:"상태값 변경", value:"userEnabled", align:"center"}
 ]
 
 const getUserList = async() => {
@@ -127,6 +134,10 @@ const updateStatus = async(userId, status) => {
   } catch(e) {
     alert(e.message);
   }
+}
+
+const goUserDetail = (userId) => {
+  router.push({name:"UserDetailManage", params:{userId:userId}})
 }
 
 onMounted(getUserList);

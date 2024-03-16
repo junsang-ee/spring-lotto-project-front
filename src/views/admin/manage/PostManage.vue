@@ -108,17 +108,17 @@ const boardId = route.params.boardId;
 const boardName = route.query.boardName;
 
 const tableHeaders = [
-    { title: '제목', align: 'center', value: 'title' },
-    { title: '작성자', align: 'center', value: 'writer' },
-    { title: '접근유형', align: 'center', value: 'disclosureType' },
-    { title: '상태', align: 'center', value: 'status' },
-    { title: '작성일', align: 'center', value: 'createdAt' },
-    { title: '활성화 댓글', align: 'center', value: 'enabledReplyCount' },
-    { title: '비활성화 댓글', align: 'center', value: 'disabledReplyCount' },
-    { title: '상태값', align: 'center', value: "postRemoved" },
-    { title: '상태값', align: 'center', value: "postEnabled" },
-    { title: '상태값', align: 'center', value: "postDisabled" },
-    { title: '영구제거', align: 'center', value: "postPermanentRemove" },
+    { title: '제목', value:"title", align:"center"},
+    { title: '작성자', value:"writer", align:"center"},
+    { title: '접근유형', value:"disclosureType", align:"center"},
+    { title: '상태', value:"status", align:"center"},
+    { title: '작성일', value:"createdAt", align:"center"},
+    { title: '활성화 댓글', value:"enabledReplyCount", align:"center"},
+    { title: '비활성화 댓글', value:"disabledReplyCount", align:"center"},
+    { title: '상태값 변경', value:"postRemoved", align:"center" },
+    { title: '상태값 변경', value: "postEnabled", align:"center" },
+    { title: '상태값 변경', value: "postDisabled", align:"center" },
+    { title: '영구제거', value: "postPermanentRemove", align:"center"},
 ]
 
 const convertStatus = (status) => {
