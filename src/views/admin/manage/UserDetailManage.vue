@@ -10,7 +10,7 @@
                 </div>
                 <div>
                     <v-label>
-                        상태: {{ convertStatus(userDetail.status) }}
+                        상태: {{ convertUserStatus(userDetail.status) }}
                     </v-label>
                 </div>
                 <div>
@@ -57,7 +57,7 @@
                     v-model:items-per-page="pageSize"
                     :headers="lottosHeader"
                     :items-length="totalCount"
-                    :items="lottoExtractions"
+                    :items="extractions"
                     :loading="isLoading"
                     :search="search"
                     item-key="id"
@@ -90,12 +90,12 @@
                     v-model:items-per-page="pageSize"
                     :headers="postsHeader"
                     :items-length="totalCount"
-                    :items="lottoExtractions"
+                    :items="posts"
                     :loading="isLoading"
                     :search="search"
                     item-key="id"
                     :page.sync="currentPage"
-                    @update:options="getExtractions"
+                    @update:options="getPosts"
                     class="elevation-1"
                 >
                     <template v-slot:no-data>
@@ -103,6 +103,16 @@
                             작성한 게시글이 아직 없습니다.
                         </v-alert>
                     </template>
+                    <template v-slot:item.createdAt="{ item }">
+                        {{ convertDateOnlyDay(item.createdAt) }}
+                    </template>
+                    <template v-slot:item.status="{ item }">
+                        {{ convertPostStatus(item.status) }}
+                    </template>
+                    <template v-slot:item.disclosureType="{ item }">
+                        {{ convertPostType(item.disclosureType) }}
+                    </template>
+                    
                 </v-data-table-server>
                 <v-row class="text-center px-4 align-center" wrap>
                     <v-col class="text-truncate" cols="12" md="2">
@@ -135,6 +145,9 @@ const currentPage = ref(1);
 const isLoading = ref(false);
 const selected = ref("lottos");
 
+const posts = ref([]);
+const extractions = ref([]);
+
 const userDetail = ref({
     email: null,
     status: null,
@@ -146,12 +159,12 @@ const userDetail = ref({
 });
 
 const postsHeader = [
-    {title:"게시판 이름", key:"parentBoardName", align:"center"},
-    {title:"제목", key:"title", align:"center"},
-    {title:"상태", key:"status", align:"center"},
-    {title:"접근유형", key:"disclosureType", align:"center"},
-    {title:"작성일", key:"createdAt", align:"center"},
-    {title:"댓글 개수", key:"replyCount", align:"center"},
+    {title:"게시판 이름", value:"parentBoardName", align:"center"},
+    {title:"제목", value:"title", align:"center"},
+    {title:"상태", value:"status", align:"center"},
+    {title:"접근유형", value:"disclosureType", align:"center"},
+    {title:"작성일", value:"createdAt", align:"center"},
+    {title:"댓글 개수", value:"replyCount", align:"center"},
     {title:"상태값 변경", value:"postRemoved", align:"center"},
     {title:"상태값 변경", value:"postEnabled", align:"center"},
     {title:"상태값 변경", value:"postDisabled", align:"center"},
@@ -170,22 +183,36 @@ const lottosHeader = [
 ];
 
 const getUserDetail = async() => {
+    
     try {
         const response = await read(`/api/admin/user/${userId}`);
         userDetail.value = response.data.data;
-        console.log("userDetail :: " + userDetail.value.email);
-        console.log("userDetail :: " + JSON.stringify(response.data.data));
+
     } catch(e) {
         alert(e.message);
     }
 }
 
 const getExtractions = async() => {
+    try {
 
+    } catch(e) {
+        alert(e.message);
+    }
 }
 
 const getPosts = async() => {
+    totalCount.value = 0;
+    pageSize.value = 10;
+    currentPage.value = 1;
+    try {
+        const response = await read(`/api/admin/user/${userId}/posts`);
+        posts.value = response.data.data.list;
+        totalCount.value = response.data.data.totalCount;
 
+    } catch(e) {
+        alert(e.message);
+    }
 }
 
 const selectCategory = (category) => {
@@ -198,10 +225,21 @@ const selectCategory = (category) => {
     console.log("test");
 }
 
-const convertStatus = (status) => {
+const convertUserStatus = (status) => {
     if (status === "ENABLED") return "정상이용 중";
     else if (status === "DISABLED") return "이용 제한";
     else return "삭제";
+}
+
+const convertPostStatus = (status) => {
+    if (status === "NORMAL") return "정상 활성화";
+    else if (status === "REMOVED") return "삭제된 게시글";
+    else return "비활성화";
+}
+
+const convertPostType = (type) => {
+    if (type === "PUBLIC") return "공개";
+    else return "비공개";
 }
 
 
