@@ -113,11 +113,18 @@ const registerPost = async () => {
 }
 
 const goPostList = () => {
-    router.replace({
-        name:"PostList", 
-        params:{boardId: boardId},
-        query: {boardName: boardName}
-    });
+    if ($userInfo.getInfo().role === "ADMIN") {
+        router.replace({
+            name: "PostManage", 
+            params: {boardId: boardId}, 
+            query: {boardName: boardName}
+        })
+    } else {
+        router.replace({
+            name:"PostList", 
+            params:{boardId:boardId}
+        });
+    }
 }
 
 </script>

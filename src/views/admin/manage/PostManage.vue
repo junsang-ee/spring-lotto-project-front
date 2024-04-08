@@ -172,7 +172,7 @@ const deletePost = async(postId) => {
     if (confirm("해당 게시글을 영구적으로 삭제하시겠습니까?")) {
         try {
             const response = await remove(`/api/admin/post/${postId}`);
-            alert(response.data.data.title + " 게시글이 정상적으로 영구 삭제되었습니다.");
+            alert("해당 게시글이 정상적으로 영구 삭제되었습니다.");
             getPosts();
         } catch(e) {
             alert(e.message);
