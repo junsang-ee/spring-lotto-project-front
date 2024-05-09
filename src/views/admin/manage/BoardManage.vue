@@ -11,7 +11,7 @@
       </v-col>
     </v-row>
 
-    <v-row>
+    <v-row style="overflow-x:scroll;">
       <v-col cols="12">
         <v-data-table-server
           v-model:items-per-page="pageSize"
@@ -45,9 +45,6 @@
             text="영구 삭제"
           />
         </template>
-
-        
-
         
         <template v-slot:item.boardEnabled="{ item }">
           <v-btn 
