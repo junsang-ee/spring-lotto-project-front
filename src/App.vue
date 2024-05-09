@@ -105,10 +105,10 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-const getBoards = async () => {
+const getBoards = async() => {
   try {
     const response = await read("/api/board");
-    boards.value = response.data.data.boards;
+    boards.value = response.data.data;
   } catch (e) {
     console.log(e.message);
   }
