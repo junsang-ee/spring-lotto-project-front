@@ -103,6 +103,11 @@
                             작성한 게시글이 아직 없습니다.
                         </v-alert>
                     </template>
+                    <template v-slot:item.title="{ item }">
+                        <button @click="goPostDetail(item.parentBoardId, item.postId)">
+                            {{ item.title }}
+                        </button>
+                    </template>
                     <template v-slot:item.createdAt="{ item }">
                         {{ convertDateOnlyDay(item.createdAt) }}
                     </template>
@@ -133,18 +138,18 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { read } from "@/utils/util-axios.js";
 import { convertDateOnlyDay } from "@/utils/util-dateConverter";
 
 const route = useRoute();
+const router = useRouter();
 const userId = route.params.userId;
 const pageSize = ref(10);
 const totalCount = ref(0);
 const currentPage = ref(1);
 const isLoading = ref(false);
 const selected = ref("lottos");
-
 const posts = ref([]);
 const extractions = ref([]);
 
@@ -183,33 +188,41 @@ const lottosHeader = [
 ];
 
 const getUserDetail = async() => {
-    
+    isLoading.value = true;
     try {
         const response = await read(`/api/admin/user/${userId}`);
         userDetail.value = response.data.data;
-
+        isLoading.value = false;
     } catch(e) {
+        isLoading.value = false;
         alert(e.message);
     }
 }
 
 const getExtractions = async() => {
+    isLoading.value = true;
     try {
-
+        const response = await read(`/api/admin/user/${userId}/extractions`, {
+            page: currentPage.value - 1,
+            size: pageSize.value
+        });
+        extractions.value = response.data.data.list;
+        totalCount.value = response.data.data.totalCount;
+        isLoading.value = false;
     } catch(e) {
+        isLoading.value = false;
         alert(e.message);
     }
 }
 
 const getPosts = async() => {
-    totalCount.value = 0;
-    pageSize.value = 10;
-    currentPage.value = 1;
     try {
-        const response = await read(`/api/admin/user/${userId}/posts`);
+        const response = await read(`/api/admin/user/${userId}/posts`, {
+            page: currentPage.value - 1,
+            size: pageSize.value
+        });
         posts.value = response.data.data.list;
         totalCount.value = response.data.data.totalCount;
-
     } catch(e) {
         alert(e.message);
     }
@@ -217,12 +230,23 @@ const getPosts = async() => {
 
 const selectCategory = (category) => {
     selected.value = category;
+    totalCount.value = 0;
+    pageSize.value = 10;
+    currentPage.value = 1;
     if (category === "lottos") {
         getExtractions();
     } else if (category === "posts") {
         getPosts();
     } 
     console.log("test");
+}
+
+const goPostDetail = (boardId, postId) => {
+    router.push({
+        name: "PostDetail", 
+        params: {postId: postId},
+        query: {boardId: boardId, isAdmin: true}
+    });
 }
 
 const convertUserStatus = (status) => {
