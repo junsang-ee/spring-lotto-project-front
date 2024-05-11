@@ -137,7 +137,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 import { read } from "@/utils/util-axios.js";
 import { convertDateOnlyDay } from "@/utils/util-dateConverter";
@@ -227,6 +227,10 @@ const getPosts = async() => {
         alert(e.message);
     }
 }
+
+const getPageCount = computed(() => {
+    return Math.floor(((totalCount.value-1) / pageSize.value) + 1);
+});
 
 const selectCategory = (category) => {
     selected.value = category;
