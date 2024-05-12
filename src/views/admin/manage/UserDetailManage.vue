@@ -70,6 +70,14 @@
                             추출한 랜덤 로또 번호가 아직 없습니다.
                         </v-alert>
                     </template>
+                    <template v-slot:item.createdAt="{ item }">
+                        {{ convertDateOnlyDay(item.createdAt) }}
+                    </template>
+                    <template v-slot:item.winningResult="{ item }">
+                        {{ convertWinningResult(item.winningResult) }}
+                    </template>
+
+
                 </v-data-table-server>
                 <v-row class="text-center px-4 align-center" wrap>
                     <v-col class="text-truncate" cols="12" md="2">
@@ -141,6 +149,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from "vue-router";
 import { read } from "@/utils/util-axios.js";
 import { convertDateOnlyDay } from "@/utils/util-dateConverter";
+import { convertWinningResult } from "@/utils/util-statusConverter";
 
 const route = useRoute();
 const router = useRouter();

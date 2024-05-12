@@ -159,6 +159,7 @@ import { useUserInfoStore } from "@/store/user";
 import { useTokenStore } from "@/store/auth";
 import { useLottoStore } from "@/store/lotto";
 import { convertDateOnlyDay } from "@/utils/util-dateConverter";
+import { convertWinningResult } from "@/utils/util-statusConverter";
 
 const router = useRouter();
 const $userInfo = useUserInfoStore();
@@ -197,12 +198,6 @@ const getPageCount = computed(() => {
 const passwordRule = [
   v => passwordRuleConfig.test(v) || "비밀번호는 6~12 자리로 입력하여야 합니다.(공백 제외)"
 ]
-
-const convertWinningResult = (status) => {
-    if (status === "PENDING") return "미추첨";
-    else if (status === "LOST") return "낙첨";
-    else return "당첨";
-}
 
 const modifyPasswordEnabled = () => 
   newPassword.value !== reEnterPassword.value;
