@@ -14,25 +14,25 @@
       <v-divider class="my-4"></v-divider>
       <v-card-actions>
         <v-btn
-          v-if="(post.mine || isAdmin) && !isEditing" 
+          v-if="(post.mine || getIsAdmin) && !isEditing" 
           color="primary" 
           @click="changeEditMode()"
           text="수정"
         />
         <v-btn 
-          v-if="(post.mine || isAdmin) && isEditing" 
+          v-if="(post.mine || getIsAdmin) && isEditing" 
           color="primary" 
           @click="validPost('update')"
           text="수정완료"
         />
         <v-btn 
-          v-if="(post.mine || isAdmin) && !isEditing" 
+          v-if="(post.mine || getIsAdmin) && !isEditing" 
           color="error" 
           @click="validPost('delete')"
           text="삭제"
         />
         <v-btn 
-          v-if="(post.mine || isAdmin) && isEditing" 
+          v-if="(post.mine || getIsAdmin) && isEditing" 
           color="error" 
           @click="cancelUpdate()"
           text="취소"
@@ -92,6 +92,7 @@
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { read, write, update, remove } from "@/utils/util-axios";
+import { useUserInfoStore } from "@/store/user";
 
 const route = useRoute();
 const router = useRouter();
@@ -110,6 +111,13 @@ const commentInputActive = ref(false);
 const showReplyButton = ref(false);
 const newReplyContent = ref(null);
 const replies = ref([]);
+const $userInfo = useUserInfoStore();
+
+const getIsAdmin = () => {
+  $userInfo.getInfo()?.role?.startsWith("ADMIN") && isAdmin;
+}
+
+
 
 const toggleReplyInput = () => {
   commentInputActive.value = true;
@@ -160,9 +168,12 @@ const post = ref({
 });
 
 const getPostDetail = async() => {
+  let apiUrl = `/api/post/${postId}`;
+  if (getIsAdmin) 
+      apiUrl = `/api/admin/post/${postId}`;
   isLoading.value = true;
   try {
-    const response = await read(`/api/post/${postId}`);
+    const response = await read(apiUrl);
     post.value = response.data.data;
     getReplies();
     isLoading.value = false;
@@ -214,7 +225,7 @@ const deletePost = async () => {
 };
 
 const goPostList = () => {
-  if (isAdmin) {
+  if (getIsAdmin) {
     router.replace({
       name: "PostManage", 
       params: {boardId: boardId}

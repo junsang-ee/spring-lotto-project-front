@@ -74,10 +74,16 @@
                         {{ convertDateOnlyDay(item.createdAt) }}
                     </template>
                     <template v-slot:item.winningResult="{ item }">
-                        {{ convertWinningResult(item.winningResult) }}
+                        <v-btn
+                            v-if="item.winningResult === 'WAITING'"
+                            color="blue"
+                            @click="checkWinningResult(item.extractionId)"
+                            text="당첨 대기(당첨 확인)"
+                        />
+                        <span v-else>
+                            {{ convertWinningResult(item.winningResult) }}
+                        </span>
                     </template>
-
-
                 </v-data-table-server>
                 <v-row class="text-center px-4 align-center" wrap>
                     <v-col class="text-truncate" cols="12" md="2">
@@ -147,7 +153,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from "vue-router";
-import { read } from "@/utils/util-axios.js";
+import { read, renew } from "@/utils/util-axios.js";
 import { convertDateOnlyDay } from "@/utils/util-dateConverter";
 import { convertWinningResult } from "@/utils/util-statusConverter";
 
@@ -186,14 +192,14 @@ const postsHeader = [
 ];
 
 const lottosHeader = [
-    {title:"첫번째 로또 번호", key:"firstNumber", align:"center"},
-    {title:"두번째 로또 번호", key:"secondNumber", align:"center"},
-    {title:"세 번째 로또 번호", key:"thirdNumber", align:"center"},
-    {title:"네 번째 로또 번호", key:"fourthNumber", align:"center"},
-    {title:"다섯 번째 로또 번호", key:"fifthNumber", align:"center"},
-    {title:"여섯 번째 로또 번호", key:"sixthNumber", align:"center"},
-    {title:"발급 날짜", key:"createdAt", align:"center"},
-    {title:"당첨 결과", key:"winningResult", align:"center"}
+    {title:"첫번째 로또 번호", value:"firstNumber", align:"center"},
+    {title:"두번째 로또 번호", value:"secondNumber", align:"center"},
+    {title:"세 번째 로또 번호", value:"thirdNumber", align:"center"},
+    {title:"네 번째 로또 번호", value:"fourthNumber", align:"center"},
+    {title:"다섯 번째 로또 번호", value:"fifthNumber", align:"center"},
+    {title:"여섯 번째 로또 번호", value:"sixthNumber", align:"center"},
+    {title:"발급 날짜", value:"createdAt", align:"center"},
+    {title:"당첨 결과", value:"winningResult", align:"center"}
 ];
 
 const getUserDetail = async() => {
@@ -220,6 +226,22 @@ const getExtractions = async() => {
         isLoading.value = false;
     } catch(e) {
         isLoading.value = false;
+        alert(e.message);
+    }
+}
+
+const checkWinningResult = async(extractionId) => {
+    try {
+        const response = await renew(`/api/admin/lotto/extraction/winning-result/${extractionId}`);
+        let result = response.data.data.winningResult;
+        if (result === "LOST") {
+            alert("해당 건은 낙첨입니다.");
+        } else if (result==="PENDING" || result==="WAITING") {
+        } else {
+            alert("당첨 축하드립니다.");
+        }
+        getExtractions();
+    } catch(e) {
         alert(e.message);
     }
 }

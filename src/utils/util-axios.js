@@ -30,6 +30,16 @@ function write(url, params, body) {
 function update(url, params, body) {
     return $axios.patch(url, body, { params: params });
 }
+
+/**
+ * put
+ * @param url
+ * @param params
+ * @param body
+ */
+function renew(url, params, body) {
+    return $axios.put(url, body, { params: params });
+}
   
 /**
  * delete
@@ -42,7 +52,7 @@ function remove(url, params, body) {
 }
 
 export {
-    read, write, update, remove
+    read, write, update, remove, renew
 };
 
 
