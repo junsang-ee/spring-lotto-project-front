@@ -71,7 +71,9 @@
                 <td v-else>{{ item.sixthNumber }}</td>
 
                 <td style="color: black;">{{ convertDateOnlyDay(item.createdAt) }}</td>
-                
+                <td>
+                  {{ item.matchRound }}
+                </td>
                 <td v-if="item.winningResult === 'WON'" class="win-default">
                   {{ convertWinningResult(item.winningResult) }}
                 </td>
@@ -181,14 +183,15 @@ const totalCount = ref(0);
 const errorMessage = ref("");
 
 const tableHeaders = [
-    {title: "첫번째 로또 번호", key: "firstNumber", align: "center"},
-    {title: "두번째 로또 번호", key: "secondNumber", align: "center"},
-    {title: "세 번째 로또 번호", key: "thirdNumber", align: "center"},
-    {title: "네 번째 로또 번호", key: "fourthNumber", align: "center"},
-    {title: "다섯 번째 로또 번호", key: "fifthNumber", align: "center"},
-    {title: "여섯 번째 로또 번호", key: "sixthNumber", align: "center"},
-    {title: "발급 날짜", key: "createdAt", align: "center"},
-    {title: "당첨 결과", key: "winningResult", align: "center"}
+    {title: "첫번째 로또 번호", value: "firstNumber", align: "center"},
+    {title: "두번째 로또 번호", value: "secondNumber", align: "center"},
+    {title: "세 번째 로또 번호", value: "thirdNumber", align: "center"},
+    {title: "네 번째 로또 번호", value: "fourthNumber", align: "center"},
+    {title: "다섯 번째 로또 번호", value: "fifthNumber", align: "center"},
+    {title: "여섯 번째 로또 번호", value: "sixthNumber", align: "center"},
+    {title: "발급 날짜", value: "createdAt", align: "center"},
+    {title: "당첨 회차", value: "matchRound", align: "center"},
+    {title: "당첨 결과", value: "winningResult", align: "center"}
 ];
 
 const getPageCount = computed(() => {
